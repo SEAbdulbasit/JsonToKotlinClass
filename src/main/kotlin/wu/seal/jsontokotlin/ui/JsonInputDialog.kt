@@ -25,6 +25,7 @@ import java.net.URL
 import java.util.*
 import java.util.Timer
 import javax.swing.*
+import javax.swing.event.DocumentListener
 import javax.swing.text.JTextComponent
 
 /**
@@ -61,7 +62,7 @@ class JsonInputDialog(classsName: String, private val project: Project) : Messag
             fixedSpace(5)
             jVerticalLinearLayout {
                 alignLeftComponent {
-                    jLabel(myMessage, 12f)
+                    jLabel(myMessage!!, 12f)
                 }
                 jHorizontalLinearLayout {
                     jLabel("JSON Text: ", 14f)
@@ -140,11 +141,6 @@ class JsonInputDialog(classsName: String, private val project: Project) : Messag
         val editorFactory = EditorFactory.getInstance()
         val document = editorFactory.createDocument("").apply {
             setReadOnly(false)
-            addDocumentListener(object : com.intellij.openapi.editor.event.DocumentListener {
-                override fun documentChanged(event: com.intellij.openapi.editor.event.DocumentEvent?) = revalidate()
-
-                override fun beforeDocumentChange(event: com.intellij.openapi.editor.event.DocumentEvent?) = Unit
-            })
         }
 
         val editor = editorFactory.createEditor(document, null, JsonFileType.INSTANCE, false)

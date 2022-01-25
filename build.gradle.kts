@@ -19,7 +19,7 @@ group = "wu.seal"
 version = System.getenv("TRAVIS_TAG") ?: "Unreleased"
 
 intellij {
-    version = "2017.1"
+    version = "2021.3"
     pluginName = "JsonToKotlinClass"
 }
 tasks.patchPluginXml {
@@ -92,4 +92,17 @@ task("createGithubReleaseNotes") {
             .substringAfter("**").substringBefore("##").trim()
         githubReleaseNoteFile.writeText(content)
     }
+
+}
+
+
+tasks {
+    withType<JavaCompile> {
+        sourceCompatibility = "11"
+        targetCompatibility = "11"
+    }
+    withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        kotlinOptions.jvmTarget = "11"
+    }
+
 }
