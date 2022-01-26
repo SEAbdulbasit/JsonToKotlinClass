@@ -9,9 +9,11 @@ import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.ui.Messages
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiManager
 import com.intellij.psi.impl.file.PsiDirectoryFactory
+import filegenerator.data.file.FileCreator
+import filegenerator.data.file.FileCreatorImpl
+import filegenerator.data.repository.SettingsRepositoryImpl
 import wu.seal.jsontokotlin.feedback.dealWithException
 import wu.seal.jsontokotlin.interceptor.InterceptorManager
 import wu.seal.jsontokotlin.model.ConfigManager
@@ -34,7 +36,10 @@ class GenerateKotlinFileAction : AnAction("Kotlin data class File from JSON") {
             val dataContext = event.dataContext
             val module = LangDataKeys.MODULE.getData(dataContext) ?: return
 
-            val directory = when (val navigatable = LangDataKeys.NAVIGATABLE.getData(dataContext)) {
+            val inputDialog = JsonInputDialog("", project)
+            inputDialog.show()
+
+            var directory = when (val navigatable = LangDataKeys.NAVIGATABLE.getData(dataContext)) {
                 is PsiDirectory -> navigatable
                 is PsiFile -> navigatable.containingDirectory
                 else -> {
@@ -47,12 +52,15 @@ class GenerateKotlinFileAction : AnAction("Kotlin data class File from JSON") {
                 }
             } ?: return
 
+            val settingsRepository = SettingsRepositoryImpl()
+            val fileCreator = FileCreatorImpl(settingsRepository, project)
+
+            directory = fileCreator.findCodeSubdirectory(inputDialog.getPackage(), directory)!!
+
             val directoryFactory = PsiDirectoryFactory.getInstance(directory.project)
             val packageName = directoryFactory.getQualifiedName(directory, false)
-            val psiFileFactory = PsiFileFactory.getInstance(project)
             val packageDeclare = if (packageName.isNotEmpty()) "package $packageName" else ""
-            val inputDialog = JsonInputDialog("", project)
-            inputDialog.show()
+
             val className = inputDialog.getClassName()
             val inputString = inputDialog.inputString.takeIf { it.isNotEmpty() } ?: return
 
@@ -62,8 +70,8 @@ class GenerateKotlinFileAction : AnAction("Kotlin data class File from JSON") {
                 inputString,
                 packageDeclare,
                 project,
-                psiFileFactory,
-                directory
+                directory,
+                fileCreator
             )
         } catch (e: UnSupportJsonException) {
             val advice = e.advice
@@ -81,8 +89,8 @@ class GenerateKotlinFileAction : AnAction("Kotlin data class File from JSON") {
         json: String,
         packageDeclare: String,
         project: Project?,
-        psiFileFactory: PsiFileFactory,
-        directory: PsiDirectory
+        directory: PsiDirectory,
+        fileCreator: FileCreator
     ) {
         val kotlinClass = KotlinClassMaker(className, json).makeKotlinClass()
         val dataClassAfterApplyInterceptor =
@@ -93,16 +101,16 @@ class GenerateKotlinFileAction : AnAction("Kotlin data class File from JSON") {
                 packageDeclare,
                 dataClassAfterApplyInterceptor,
                 project,
-                psiFileFactory,
-                directory
+                directory,
+                fileCreator
             )
         } else {
             KotlinClassFileGenerator().generateMultipleKotlinClassFiles(
                 dataClassAfterApplyInterceptor,
                 packageDeclare,
                 project,
-                psiFileFactory,
-                directory
+                directory,
+                fileCreator
             )
         }
     }

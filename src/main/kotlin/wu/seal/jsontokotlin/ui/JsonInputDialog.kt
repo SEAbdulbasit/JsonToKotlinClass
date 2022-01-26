@@ -25,7 +25,6 @@ import java.net.URL
 import java.util.*
 import java.util.Timer
 import javax.swing.*
-import javax.swing.event.DocumentListener
 import javax.swing.text.JTextComponent
 
 /**
@@ -47,6 +46,7 @@ class JsonInputDialog(classsName: String, private val project: Project) : Messag
     jsonInputDialogValidator
 ) {
     private lateinit var jsonContentEditor: Editor
+    private lateinit var packageNameInput: JTextComponent
 
     private val prettyGson: Gson = GsonBuilder().setPrettyPrinting().serializeNulls().disableHtmlEscaping().create()
 
@@ -96,23 +96,35 @@ class JsonInputDialog(classsName: String, private val project: Project) : Messag
             putCenterFill(jsonContentEditor.component)
 
             bottomContainer {
-                jVerticalLinearLayout {
-                    fixedSpace(7)
-                    jHorizontalLinearLayout {
-                        jLabel("Class Name: ", 14f)
-                        add(myField)
-                    }
-                    fixedSpace(3)
-                    jHorizontalLinearLayout {
-                        jButton("Advanced", { AdvancedDialog(false).show() })
-                        fillSpace()
-                        jLabel("Like this version? Please star here: ")
-                        jLink(
-                            "https://github.com/wuseal/JsonToKotlinClass",
-                            "https://github.com/wuseal/JsonToKotlinClass",
-                            maxSize = JBDimension(210, 30)
-                        ) {
-                            sendActionInfo(prettyGson.toJson(ClickProjectURLAction()))
+                jHorizontalLinearLayout {
+                    jVerticalLinearLayout {
+                        fixedSpace(7)
+                        jHorizontalLinearLayout {
+                            jLabel("Class Name: ", 14f)
+                            add(myField)
+                        }
+                        fixedSpace(3)
+                        jHorizontalLinearLayout {
+                            jLabel("Package: ", 14f)
+                            fixedSpace(12)
+                            packageNameInput = createTextFieldComponent()
+
+                            add(
+                                packageNameInput
+                            )
+                        }
+                        fixedSpace(7)
+                        jHorizontalLinearLayout {
+                            jButton("Advanced", { AdvancedDialog(false).show() })
+                            fillSpace()
+                            jLabel("Like this version? Please star here: ")
+                            jLink(
+                                "https://github.com/wuseal/JsonToKotlinClass",
+                                "https://github.com/wuseal/JsonToKotlinClass",
+                                maxSize = JBDimension(210, 30)
+                            ) {
+                                sendActionInfo(prettyGson.toJson(ClickProjectURLAction()))
+                            }
                         }
                     }
                 }
@@ -216,6 +228,13 @@ class JsonInputDialog(classsName: String, private val project: Project) : Messag
     fun getClassName(): String {
         return if (exitCode == 0) {
             val name = myField.text.trim()
+            name.let { if (it.first().isDigit() || it.contains('$')) "`$it`" else it }
+        } else ""
+    }
+
+    fun getPackage(): String {
+        return if (exitCode == 0) {
+            val name = packageNameInput.text.trim()
             name.let { if (it.first().isDigit() || it.contains('$')) "`$it`" else it }
         } else ""
     }

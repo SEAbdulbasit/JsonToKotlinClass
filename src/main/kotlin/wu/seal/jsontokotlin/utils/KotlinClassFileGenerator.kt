@@ -2,63 +2,68 @@ package wu.seal.jsontokotlin.utils
 
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDirectory
-import com.intellij.psi.PsiFileFactory
+import filegenerator.data.file.FileCreator
+import filegenerator.model.AndroidComponent
+import filegenerator.model.Category
 import wu.seal.jsontokotlin.model.classscodestruct.KotlinClass
-import wu.seal.jsontokotlin.filetype.KotlinFileType
 
 class KotlinClassFileGenerator {
 
     fun generateSingleKotlinClassFile(
-            packageDeclare: String,
-            kotlinClass: KotlinClass,
-            project: Project?,
-            psiFileFactory: PsiFileFactory,
-            directory: PsiDirectory
+        packageDeclare: String,
+        kotlinClass: KotlinClass,
+        project: Project?,
+        directory: PsiDirectory,
+        fileCreator: FileCreator
     ) {
         val fileNamesWithoutSuffix = currentDirExistsFileNamesWithoutKTSuffix(directory)
         var kotlinClassForGenerateFile = kotlinClass
         while (fileNamesWithoutSuffix.contains(kotlinClass.name)) {
             kotlinClassForGenerateFile =
-                    kotlinClassForGenerateFile.rename(newName = kotlinClassForGenerateFile.name + "X")
+                kotlinClassForGenerateFile.rename(newName = kotlinClassForGenerateFile.name + "X")
         }
         generateKotlinClassFile(
-                kotlinClassForGenerateFile.name,
-                packageDeclare,
-                kotlinClassForGenerateFile.getCode(),
-                project,
-                psiFileFactory,
-                directory
+            kotlinClassForGenerateFile.name,
+            packageDeclare,
+            kotlinClassForGenerateFile.getCode(),
+            directory,
+            fileCreator
         )
         val notifyMessage = "Kotlin Data Class file generated successful"
         showNotify(notifyMessage, project)
     }
 
     fun generateMultipleKotlinClassFiles(
-            kotlinClass: KotlinClass,
-            packageDeclare: String,
-            project: Project?,
-            psiFileFactory: PsiFileFactory,
-            directory: PsiDirectory
+        kotlinClass: KotlinClass,
+        packageDeclare: String,
+        project: Project?,
+        directory: PsiDirectory,
+        fileCreator: FileCreator
     ) {
         val fileNamesWithoutSuffix = currentDirExistsFileNamesWithoutKTSuffix(directory)
         val existsKotlinFileNames = IgnoreCaseStringSet().also { it.addAll(fileNamesWithoutSuffix) }
-        val splitClasses = kotlinClass.resolveNameConflicts(existsKotlinFileNames).getAllModifiableClassesRecursivelyIncludeSelf()
-        val renameClassMap = getRenameClassMap(originNames = kotlinClass.getAllModifiableClassesRecursivelyIncludeSelf().map { it.name },
+        val splitClasses =
+            kotlinClass.resolveNameConflicts(existsKotlinFileNames).getAllModifiableClassesRecursivelyIncludeSelf()
+        val renameClassMap =
+            getRenameClassMap(originNames = kotlinClass.getAllModifiableClassesRecursivelyIncludeSelf().map { it.name },
                 currentNames = splitClasses.map { it.name })
         splitClasses.forEach { splitDataClass ->
             generateKotlinClassFile(
-                    splitDataClass.name,
-                    packageDeclare,
-                    splitDataClass.getOnlyCurrentCode(),
-                    project,
-                    psiFileFactory,
-                    directory
+                splitDataClass.name,
+                packageDeclare,
+                splitDataClass.getOnlyCurrentCode(),
+                directory,
+                fileCreator
             )
             val notifyMessage = buildString {
                 append("${splitClasses.size} Kotlin Data Class files generated successful")
                 if (renameClassMap.isNotEmpty()) {
                     append("\n")
-                    append("These class names has been auto renamed to new names:\n ${renameClassMap.map { it.first + " -> " + it.second }.toList()}")
+                    append(
+                        "These class names has been auto renamed to new names:\n ${
+                            renameClassMap.map { it.first + " -> " + it.second }.toList()
+                        }"
+                    )
                 }
             }
             showNotify(notifyMessage, project)
@@ -68,7 +73,7 @@ class KotlinClassFileGenerator {
     private fun currentDirExistsFileNamesWithoutKTSuffix(directory: PsiDirectory): List<String> {
         val kotlinFileSuffix = ".kt"
         return directory.files.filter { it.name.endsWith(kotlinFileSuffix) }
-                .map { it.name.dropLast(kotlinFileSuffix.length) }
+            .map { it.name.dropLast(kotlinFileSuffix.length) }
     }
 
     private fun getRenameClassMap(originNames: List<String>, currentNames: List<String>): List<Pair<String, String>> {
@@ -85,13 +90,13 @@ class KotlinClassFileGenerator {
     }
 
     private fun generateKotlinClassFile(
-            fileName: String,
-            packageDeclare: String,
-            classCodeContent: String,
-            project: Project?,
-            psiFileFactory: PsiFileFactory,
-            directory: PsiDirectory
+        fileName: String,
+        packageDeclare: String,
+        classCodeContent: String,
+        directory: PsiDirectory,
+        fileCreator: FileCreator
     ) {
+
         val kotlinFileContent = buildString {
             if (packageDeclare.isNotEmpty()) {
                 append(packageDeclare)
@@ -104,11 +109,15 @@ class KotlinClassFileGenerator {
             }
             append(classCodeContent)
         }
-        executeCouldRollBackAction(project) {
-            val file =
-                    psiFileFactory.createFileFromText("${fileName.trim('`')}.kt", KotlinFileType(), kotlinFileContent)
-            directory.add(file)
-        }
+
+        fileCreator.createScreenFiles(
+            packageName = packageDeclare,
+            screenName = fileName.trim('`'),
+            androidComponent = AndroidComponent.NONE,
+            psiDirectory = directory,
+            fileBody = classCodeContent
+        )
+
     }
 
 }
