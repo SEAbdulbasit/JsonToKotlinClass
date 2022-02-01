@@ -2,11 +2,9 @@ package filegenerator.model
 
 import filegenerator.data.file.getDataClassParamsWithoutAnnotations
 import filegenerator.data.file.getMapperBodyParams
-import filegenerator.data.file.updateRemoteDataClassName
-import filegenerator.data.util.toSnakeCase
+import wu.seal.jsontokotlin.utils.KotlinClassFileGenerator
 import java.io.Serializable
 
-private const val UNNAMED_ELEMENT = "UnnamedElement"
 const val DEFAULT_SOURCE_SET = "main"
 
 data class ScreenElement(
@@ -14,8 +12,6 @@ data class ScreenElement(
     var template: String = "",
     var fileType: FileType,
     var fileNameTemplate: String = "",
-    var relatedAndroidComponent: AndroidComponent = AndroidComponent.NONE,
-    var categoryId: Int = 0,
     var subdirectory: String = "",
     var sourceSet: String = DEFAULT_SOURCE_SET
 ) : Serializable {
@@ -25,42 +21,38 @@ data class ScreenElement(
     fun body(
         screenName: String,
         packageName: String,
-        androidComponent: String,
-        params: String
-    ) =
-        template
-            .replaceVariables(screenName, packageName, androidComponent, params)
+        fileBody: String,
+        mappers: String?,
+        mappersIndexes: List<KotlinClassFileGenerator.MappersWithIndex>?,
+        elementName: String
+    ) = template.replaceVariables(screenName, packageName, fileBody, mappers, mappersIndexes, elementName)
 
     fun fileName(
         screenName: String,
         packageName: String,
-        androidComponent: String,
-    ) =
-        fileNameTemplate
-            .replaceVariables(screenName, packageName, androidComponent, "")
-            .run {
-                this
-            }
+    ) = fileNameTemplate.replaceVariableForFileName(screenName, packageName).run {
+        this
+    }
 
     private fun String.replaceVariables(
         screenName: String,
         packageName: String,
-        androidComponent: String,
-        params: String
-    ) =
-        replace(Variable.NAME.value, screenName)
-            .replace(Variable.NAME_SNAKE_CASE.value, screenName.toSnakeCase())
-            .replace(Variable.NAME_LOWER_CASE.value, screenName.decapitalize())
-            .replace(Variable.SCREEN_ELEMENT.value, name)
-            .replace(Variable.PACKAGE_NAME.value, packageName)
-            .replace(Variable.PACKAGE_NAME.value, packageName)
-            .replace(Variable.PACKAGE_DIRECTORY.value, packageName.replace("package", "").trim())
-            .replace(Variable.DATA_CLASS_PARAMS.value, getDataClassParamsWithoutAnnotations(params))
-            .replace(Variable.REMOTE_DATA_CLASS.value, updateRemoteDataClassName(params))
-            .replace(
-                Variable.MAPPER_DATA_CLASS_VARIABLES.value,
-                getMapperBodyParams(getDataClassParamsWithoutAnnotations(params))
-            )
-            .replace(Variable.ANDROID_COMPONENT_NAME_LOWER_CASE.value, androidComponent.decapitalize())
+        fileBody: String,
+        mappers: String?,
+        mappersIndexes: List<KotlinClassFileGenerator.MappersWithIndex>?,
+        elementName: String
+    ) = replace(Variable.NAME.value, screenName).replace(Variable.PACKAGE_NAME.value, packageName)
+        .replace(Variable.PACKAGE_DIRECTORY.value, packageName.replace("package", "").trim())
+        .replace(Variable.DATA_CLASS_PARAMS.value, getDataClassParamsWithoutAnnotations(fileBody))
+        .replace(Variable.REMOTE_DATA_CLASS.value, fileBody).replace(Variable.MAPPERS_DECLARATION.value, mappers ?: "")
+        .replace(
+            Variable.MAPPER_DATA_CLASS_VARIABLES.value,
+            getMapperBodyParams(getDataClassParamsWithoutAnnotations(fileBody), mappersIndexes, elementName)
+        )
 
+    private fun String.replaceVariableForFileName(
+        screenName: String,
+        packageName: String,
+    ) = replace(Variable.NAME.value, screenName).replace(Variable.PACKAGE_NAME.value, packageName)
+        .replace(Variable.PACKAGE_DIRECTORY.value, packageName.replace("package", "").trim())
 }

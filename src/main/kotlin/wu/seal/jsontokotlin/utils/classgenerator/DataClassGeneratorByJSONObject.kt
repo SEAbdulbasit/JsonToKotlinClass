@@ -1,6 +1,7 @@
 package wu.seal.jsontokotlin.utils.classgenerator
 
 import com.google.gson.JsonObject
+import filegenerator.model.Variable
 import wu.seal.jsontokotlin.model.ConfigManager
 import wu.seal.jsontokotlin.utils.TargetJsonElement
 import wu.seal.jsontokotlin.model.classscodestruct.KotlinClass
@@ -102,7 +103,7 @@ class DataClassGeneratorByJSONObject(private val className: String, private val 
         }
 
         val propertiesAfterConsumeBackStageProperties = properties.consumeBackstageProperties()
-        return DataClass(name = className, properties = propertiesAfterConsumeBackStageProperties)
+        return DataClass(name = className+ Variable.KOTLIN_GENERATED_CODE.value, properties = propertiesAfterConsumeBackStageProperties)
     }
 
     private fun mapValueIsObjectType(mapValueType: String) = (mapValueType == MAP_DEFAULT_OBJECT_VALUE_TYPE

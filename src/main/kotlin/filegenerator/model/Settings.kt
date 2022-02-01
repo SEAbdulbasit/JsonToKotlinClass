@@ -1,72 +1,42 @@
 package filegenerator.model
 
-import filegenerator.data.file.*
-import java.io.Serializable
-
-private fun defaultScreenElements() = mutableListOf(
+fun defaultScreenElements() = mutableListOf(
 
     ScreenElement(
-        "Entity",
-        ENTITY_DATA_CLASS_TEMPLATE,
-        FileType.DATA_CLASS,
-        FileType.DATA_CLASS.defaultFileName,
+        name = "Entity",
+        template = FileType.ENTITY_DATA_CLASS.bodyTemplate,
+        fileType = FileType.ENTITY_DATA_CLASS,
+        fileNameTemplate = FileType.ENTITY_DATA_CLASS.fileNameTemplate,
         subdirectory = "entity/model"
     ),
     ScreenElement(
-        "EntityMapper",
-        ENTITY_MAPPER_DATA_CLASS_TEMPLATE,
-        FileType.MAPPER_CLASS,
-        FileType.MAPPER_CLASS.defaultFileName,
+        name = "EntityMapper",
+        template = FileType.ENTITY_MAPPER.bodyTemplate,
+        fileType = FileType.ENTITY_MAPPER,
+        fileNameTemplate = FileType.ENTITY_MAPPER.fileNameTemplate,
         subdirectory = "entity/mapper"
     ),
-
-    ScreenElement(
-        "UI",
-       UI_DATA_CLASS_TEMPLATE,
-        FileType.DATA_CLASS,
-        FileType.DATA_CLASS.defaultFileName,
-        subdirectory = "ui/model"
-    ),
-    ScreenElement(
-        "UIMapper",
-        UI_MAPPER_DATA_CLASS_TEMPLATE,
-        FileType.MAPPER_CLASS,
-        FileType.MAPPER_CLASS.defaultFileName,
-        subdirectory = "ui/mapper"
-    ),
-
-    ScreenElement(
-        "Remote",
-        REMOTE_DATA_CLASS_TEMPLATE,
-        FileType.DATA_CLASS,
-        FileType.DATA_CLASS.defaultFileName,
-        subdirectory = "remote/model"
-    ),
-
-
-//
 //    ScreenElement(
-//        "Android Manifest",
-//        DEFAULT_REPOSITORY_TEMPLATE,
-//        FileType.LAYOUT_XML,
-//        FileType.LAYOUT_XML.defaultFileName,
-//        subdirectory = "src/main"
+//        name = "UI",
+//        template = FileType.UI_DATA_CLASS.bodyTemplate,
+//        fileType = FileType.UI_DATA_CLASS,
+//        fileNameTemplate = FileType.UI_DATA_CLASS.fileNameTemplate,
+//        subdirectory = "ui/model"
 //    ),
-//
 //    ScreenElement(
-//        "Build Gradle",
-//        DEFAULT_ACTIVITY_TEMPLATE,
-//        FileType.BUILD_GRADLE,
-//        FileType.BUILD_GRADLE.defaultFileName
+//        name = "UIMapper",
+//        template = FileType.UI_MAPPER.bodyTemplate,
+//        fileType = FileType.UI_MAPPER,
+//        fileNameTemplate = FileType.UI_MAPPER.fileNameTemplate,
+//        subdirectory = "ui/mapper"
 //    ),
-//    ScreenElement("Git Ignore", DEFAULT_ACTIVITY_TEMPLATE, FileType.GIT_IGNORE, FileType.GIT_IGNORE.defaultFileName),
+    ScreenElement(
+        name = "Remote",
+        template = FileType.REMOTE_DATA_CLASS.bodyTemplate,
+        fileType = FileType.REMOTE_DATA_CLASS,
+        fileNameTemplate = FileType.REMOTE_DATA_CLASS.fileNameTemplate,
+        subdirectory = "remote"
+    )
 )
 
-private fun defaultCategories() = mutableListOf(
-    Category(0, "Default")
-)
 
-data class Settings(
-    var screenElements: MutableList<ScreenElement> = defaultScreenElements(),
-    var categories: MutableList<Category> = defaultCategories()
-) : Serializable

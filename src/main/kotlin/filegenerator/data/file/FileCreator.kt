@@ -3,18 +3,17 @@ package filegenerator.data.file
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDirectory
 import filegenerator.data.repository.SettingsRepository
-import filegenerator.model.AndroidComponent
-
-private const val LAYOUT_DIRECTORY = "layout"
+import filegenerator.model.ScreenElement
+import wu.seal.jsontokotlin.utils.KotlinClassFileGenerator
 
 interface FileCreator {
 
     fun createScreenFiles(
+        mappers: List<KotlinClassFileGenerator.MappersWithIndex>?,
         packageName: String,
         screenName: String,
-        androidComponent: AndroidComponent,
         psiDirectory: PsiDirectory,
-        fileBody: String
+        fileBody: String,
     )
 }
 
@@ -24,26 +23,68 @@ class FileCreatorImpl constructor(
 ) : FileCreator {
 
     override fun createScreenFiles(
+        mappers: List<KotlinClassFileGenerator.MappersWithIndex>?,
         packageName: String,
         screenName: String,
-        androidComponent: AndroidComponent,
         psiDirectory: PsiDirectory,
-        fileBody: String
+        fileBody: String,
     ) {
+        val regex = "KKK/?.*?KKK".toRegex()
+
         settingsRepository.loadScreenElements().forEach {
-            val file = File(
-                it.fileName(screenName, packageName, androidComponent.displayName), it.body(
-                    screenName,
+            var file = File(
+                it.fileName(
+                    regex.replace(screenName, it.fileType.displayName),
+                    packageName
+                ),
+                it.body(
+                    regex.replace(screenName, it.fileType.displayName),
                     packageName,
-                    androidComponent.displayName,
-                    fileBody
+                    regex.replace(fileBody, it.fileType.displayName),
+                    regex.replace(getMappersDeclaration(mappers, it, regex), it.fileType.displayName),
+                    mappers,
+                    it.name
                 ), it.fileType
             )
+
             if (psiDirectory != null) {
                 addFile(psiDirectory, file, it.subdirectory.toLowerCase())
             }
         }
 
+    }
+
+    private fun getMappersDeclaration(
+        mappers: List<KotlinClassFileGenerator.MappersWithIndex>?,
+        screenElement: ScreenElement,
+        regex: Regex
+    ): String {
+        var mappersValue = ""
+        mappers?.forEach {
+            val mapper = regex.replace(it.mapper, screenElement.fileType.displayName)
+            mappersValue += "val ${toCamelCase(mapper)}${screenElement.name} by lazy { ${it.mapper}${screenElement.name}() }\n"
+        }
+
+        return mappersValue
+
+    }
+
+
+    private fun toCamelCase(text: String): String {
+        val words: List<String> = text.split("[\\W_]+")
+
+        val builder = StringBuilder()
+        for (i in words.indices) {
+            var word: String = words.get(i)
+            word = if (i == 0) {
+                if (word.isEmpty()) word else word.toLowerCase()
+            } else {
+                if (word.isEmpty()) word else Character.toUpperCase(word[0]).toString() + word.substring(1)
+                    .toLowerCase()
+            }
+            builder.append(word)
+        }
+        return builder.toString()
     }
 
 

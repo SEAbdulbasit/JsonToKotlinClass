@@ -1,7 +1,7 @@
 package filegenerator.data.repository
 
 import filegenerator.model.ScreenElement
-import filegenerator.model.Settings
+import filegenerator.model.defaultScreenElements
 
 interface SettingsRepository {
     fun loadScreenElements(): List<ScreenElement>
@@ -9,6 +9,6 @@ interface SettingsRepository {
 
 class SettingsRepositoryImpl : SettingsRepository {
 
-    override fun loadScreenElements() = Settings().screenElements
+    override fun loadScreenElements() = defaultScreenElements()
 
 }

@@ -3,8 +3,7 @@ package wu.seal.jsontokotlin.utils
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDirectory
 import filegenerator.data.file.FileCreator
-import filegenerator.model.AndroidComponent
-import filegenerator.model.Category
+import wu.seal.jsontokotlin.model.classscodestruct.DataClass
 import wu.seal.jsontokotlin.model.classscodestruct.KotlinClass
 
 class KotlinClassFileGenerator {
@@ -23,6 +22,7 @@ class KotlinClassFileGenerator {
                 kotlinClassForGenerateFile.rename(newName = kotlinClassForGenerateFile.name + "X")
         }
         generateKotlinClassFile(
+            null,
             kotlinClassForGenerateFile.name,
             packageDeclare,
             kotlinClassForGenerateFile.getCode(),
@@ -49,6 +49,7 @@ class KotlinClassFileGenerator {
                 currentNames = splitClasses.map { it.name })
         splitClasses.forEach { splitDataClass ->
             generateKotlinClassFile(
+                getMappers(splitDataClass),
                 splitDataClass.name,
                 packageDeclare,
                 splitDataClass.getOnlyCurrentCode(),
@@ -90,6 +91,7 @@ class KotlinClassFileGenerator {
     }
 
     private fun generateKotlinClassFile(
+        mappers: List<MappersWithIndex>?,
         fileName: String,
         packageDeclare: String,
         classCodeContent: String,
@@ -111,13 +113,36 @@ class KotlinClassFileGenerator {
         }
 
         fileCreator.createScreenFiles(
+            mappers = mappers,
             packageName = packageDeclare,
             screenName = fileName.trim('`'),
-            androidComponent = AndroidComponent.NONE,
             psiDirectory = directory,
             fileBody = classCodeContent
         )
 
     }
 
+    data class MappersWithIndex(val index: Int, val mapper: String)
+
+
+    fun getMappers(kotlinClass: KotlinClass): MutableList<MappersWithIndex>? {
+        return if (kotlinClass is DataClass) {
+            val mappersList = mutableListOf<MappersWithIndex>()
+            kotlinClass.properties.forEachIndexed { index, property ->
+                if (property.typeObject is DataClass)
+                    mappersList.add(
+                        MappersWithIndex(
+                            index,
+                            property.typeObject.name
+                        )
+                    )
+            }
+            mappersList
+        } else {
+            null
+        }
+    }
+
+
 }
+
