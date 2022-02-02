@@ -16,20 +16,20 @@ fun defaultScreenElements() = mutableListOf(
         fileNameTemplate = FileType.ENTITY_MAPPER.fileNameTemplate,
         subdirectory = "entity/mapper"
     ),
-//    ScreenElement(
-//        name = "UI",
-//        template = FileType.UI_DATA_CLASS.bodyTemplate,
-//        fileType = FileType.UI_DATA_CLASS,
-//        fileNameTemplate = FileType.UI_DATA_CLASS.fileNameTemplate,
-//        subdirectory = "ui/model"
-//    ),
-//    ScreenElement(
-//        name = "UIMapper",
-//        template = FileType.UI_MAPPER.bodyTemplate,
-//        fileType = FileType.UI_MAPPER,
-//        fileNameTemplate = FileType.UI_MAPPER.fileNameTemplate,
-//        subdirectory = "ui/mapper"
-//    ),
+    ScreenElement(
+        name = "UI",
+        template = FileType.UI_DATA_CLASS.bodyTemplate,
+        fileType = FileType.UI_DATA_CLASS,
+        fileNameTemplate = FileType.UI_DATA_CLASS.fileNameTemplate,
+        subdirectory = "ui/model"
+    ),
+    ScreenElement(
+        name = "UiMapper",
+        template = FileType.UI_MAPPER.bodyTemplate,
+        fileType = FileType.UI_MAPPER,
+        fileNameTemplate = FileType.UI_MAPPER.fileNameTemplate,
+        subdirectory = "ui/mapper"
+    ),
     ScreenElement(
         name = "Remote",
         template = FileType.REMOTE_DATA_CLASS.bodyTemplate,

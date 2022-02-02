@@ -3,6 +3,7 @@ package filegenerator.data.file
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDirectory
 import filegenerator.data.repository.SettingsRepository
+import filegenerator.model.FileType
 import wu.seal.jsontokotlin.model.classscodestruct.KotlinClass
 
 interface FileCreator {
@@ -32,7 +33,22 @@ class FileCreatorImpl constructor(
             val mappersDeclaration = generateFilesFromTemplates.mappersDeclaration(it)
             val dataClassParamsWithOutAnnotations =
                 generateFilesFromTemplates.getDataClassParamsWithOutAnnotations(fileBodyWithRegexApplied)
-            val mappersParams = generateFilesFromTemplates.getMappersParams(dataClassParamsWithOutAnnotations, it)
+
+            var mapToItemParams = ""
+            var mapFromItemsParams = ""
+
+            when (it.fileType) {
+                FileType.ENTITY_MAPPER -> {
+                    mapToItemParams =
+                        generateFilesFromTemplates.getEntityMappersParams(dataClassParamsWithOutAnnotations, it)
+                    mapFromItemsParams = generateFilesFromTemplates.getMapFromItemParamsEntity(mapToItemParams)
+                }
+                FileType.UI_MAPPER -> {
+                    mapToItemParams =
+                        generateFilesFromTemplates.getUiMappersParams(dataClassParamsWithOutAnnotations, it)
+                    mapFromItemsParams = generateFilesFromTemplates.getMapFromItemParamsUi(mapToItemParams)
+                }
+            }
 
             var file = File(
                 name = it.fileName(
@@ -43,7 +59,8 @@ class FileCreatorImpl constructor(
                     fileBody = fileBodyWithRegexApplied,
                     dataClassParamsWithoutAnnotations = dataClassParamsWithOutAnnotations,
                     mappersDeclaration = mappersDeclaration,
-                    mappersParams = mappersParams
+                    mapToParams = mapToItemParams,
+                    mapFromParams = mapFromItemsParams
                 ), fileType = it.fileType
             )
 

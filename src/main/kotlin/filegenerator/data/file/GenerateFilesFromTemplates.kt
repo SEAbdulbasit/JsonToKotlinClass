@@ -1,5 +1,6 @@
 package filegenerator.data.file
 
+import extensions.wu.seal.PropertyPrefixSupport.append
 import filegenerator.data.util.getParamVariableNameFromList
 import filegenerator.data.util.toCamelCase
 import filegenerator.model.ScreenElement
@@ -26,14 +27,26 @@ class GenerateFilesFromTemplates(val kotlinClass: KotlinClass) {
     }
 
     fun mappersDeclaration(screenElement: ScreenElement): String {
-        var mappersDeclarationString = ""
+        var mappersDeclarationString = "\n"
         mapperList.map {
-            mappersDeclarationString += "val ${it.name.toCamelCase()}${screenElement.name} by lazy { ${it.name}${screenElement.name}() }\n"
+            mappersDeclarationString += "\tprivate val ${it.name.toCamelCase()}${screenElement.name} by lazy { ${it.name}${screenElement.name}() }\n"
+        }
+        if (mappersDeclarationString.trim().isNotEmpty()) {
+            mappersDeclarationString.append("\n")
         }
         return mappersDeclarationString
     }
 
-    fun getMappersParams(fileBodyClass: String, screenNameElement: ScreenElement): String {
+    fun getMapFromItemParamsEntity(mapToItemParams: String): String {
+        return mapToItemParams.replace("mapToItem", "mapFromItem")
+    }
+
+
+    fun getMapFromItemParamsUi(mapToItemParams: String): String {
+        return mapToItemParams.replace("mapToUiModel", "mapFromUiModel")
+    }
+
+    fun getEntityMappersParams(fileBodyClass: String, screenNameElement: ScreenElement): String {
         val getVariableNames =
             fileBodyClass.replace(Regex("\n|\t"), "").replace(Regex("val |var"), "").replace(Regex("[ ?]"), "")
                 .replace(Regex(":([A-z]*)"), "").replace(Regex(": ([A-z]*)"), "").replace(Regex("<[a-zA-Z]+>"), "")
@@ -44,16 +57,15 @@ class GenerateFilesFromTemplates(val kotlinClass: KotlinClass) {
         splitStrings.forEachIndexed { index, variableName ->
             val mapper = mapperList.find { it.index == index }
             if (mapper != null) {
-                when (mapper.typeObject) {
+                mappedStrings += when (mapper.typeObject) {
                     is DataClass -> {
-
-                        mappedStrings += "$variableName = ${mapper.name.toCamelCase()}${screenNameElement.name}.mapToItem($variableName)"
+                        "$variableName = ${mapper.name.toCamelCase()}${screenNameElement.name}.mapToItem($variableName)"
                     }
                     is GenericListClass -> {
-                        mappedStrings += "$variableName =$variableName.map{ ${mapper.name.toCamelCase()}${screenNameElement.name}.mapToItem(it)}"
+                        "$variableName =$variableName.map{ ${mapper.name.toCamelCase()}${screenNameElement.name}.mapToItem(it)}"
                     }
                     else -> {
-                        mappedStrings += "$variableName =${mapper.name.toCamelCase()}${screenNameElement.name}.mapToItem($variableName)"
+                        "$variableName =${mapper.name.toCamelCase()}${screenNameElement.name}.mapToItem($variableName)"
                     }
                 }
 
@@ -67,6 +79,10 @@ class GenerateFilesFromTemplates(val kotlinClass: KotlinClass) {
         return mappedStrings
 
 
+    }
+
+    fun getUiMappersParams(fileBodyClass: String, screenNameElement: ScreenElement): String {
+        return getEntityMappersParams(fileBodyClass, screenNameElement).replace("mapToItem", "mapToUiModel")
     }
 
     fun setMappers(screenNameElement: ScreenElement) {

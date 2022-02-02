@@ -21,9 +21,16 @@ data class ScreenElement(
         fileBody: String,
         dataClassParamsWithoutAnnotations: String,
         mappersDeclaration: String,
-        mappersParams: String,
+        mapToParams: String,
+        mapFromParams: String
     ) = template.replaceVariables(
-        screenName, packageName, fileBody, dataClassParamsWithoutAnnotations, mappersDeclaration, mappersParams
+        screenName,
+        packageName,
+        fileBody,
+        dataClassParamsWithoutAnnotations,
+        mappersDeclaration,
+        mapToParams,
+        mapFromParams
     )
 
     fun fileName(
@@ -38,13 +45,15 @@ data class ScreenElement(
         fileBody: String,
         dataClassParamsWithoutAnnotations: String,
         mappersDeclaration: String,
-        mappersParams: String,
+        mapToParams: String,
+        mapFromParams: String,
     ) = replace(Variable.NAME.value, screenName).replace(Variable.PACKAGE_NAME.value, packageName)
         .replace(Variable.PACKAGE_DIRECTORY.value, packageName.replace("package", "").trim())
         .replace(Variable.DATA_CLASS_PARAMS.value, dataClassParamsWithoutAnnotations)
         .replace(Variable.REMOTE_DATA_CLASS.value, fileBody)
         .replace(Variable.MAPPERS_DECLARATION.value, mappersDeclaration)
-        .replace(Variable.MAPPER_DATA_CLASS_VARIABLES.value, mappersParams)
+        .replace(Variable.MAPPER_TO_ITEM_DATA_CLASS_VARIABLES.value, mapToParams)
+        .replace(Variable.MAPPER_FROM_ITEM_DATA_CLASS_VARIABLES.value, mapFromParams)
 
     private fun String.replaceVariableForFileName(
         screenName: String,
