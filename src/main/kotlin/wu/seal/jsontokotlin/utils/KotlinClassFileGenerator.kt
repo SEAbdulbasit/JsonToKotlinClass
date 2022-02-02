@@ -3,8 +3,6 @@ package wu.seal.jsontokotlin.utils
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDirectory
 import filegenerator.data.file.FileCreator
-import wu.seal.jsontokotlin.model.classscodestruct.DataClass
-import wu.seal.jsontokotlin.model.classscodestruct.GenericListClass
 import wu.seal.jsontokotlin.model.classscodestruct.KotlinClass
 
 class KotlinClassFileGenerator {
@@ -22,14 +20,13 @@ class KotlinClassFileGenerator {
             kotlinClassForGenerateFile =
                 kotlinClassForGenerateFile.rename(newName = kotlinClassForGenerateFile.name + "X")
         }
-        generateKotlinClassFile(
-            null,
-            kotlinClassForGenerateFile.name,
-            packageDeclare,
-            kotlinClassForGenerateFile.getCode(),
-            directory,
-            fileCreator
+
+        fileCreator.createScreenFiles(
+            splitDataClass = kotlinClass,
+            packageName = packageDeclare,
+            psiDirectory = directory,
         )
+
         val notifyMessage = "Kotlin Data Class file generated successful"
         showNotify(notifyMessage, project)
     }
@@ -45,28 +42,16 @@ class KotlinClassFileGenerator {
         val existsKotlinFileNames = IgnoreCaseStringSet().also { it.addAll(fileNamesWithoutSuffix) }
         val splitClasses =
             kotlinClass.resolveNameConflicts(existsKotlinFileNames).getAllModifiableClassesRecursivelyIncludeSelf()
-        val renameClassMap =
-            getRenameClassMap(originNames = kotlinClass.getAllModifiableClassesRecursivelyIncludeSelf().map { it.name },
-                currentNames = splitClasses.map { it.name })
+
         splitClasses.forEach { splitDataClass ->
-            generateKotlinClassFile(
-                getMappers(splitDataClass),
-                splitDataClass.name,
-                packageDeclare,
-                splitDataClass.getOnlyCurrentCode(),
-                directory,
-                fileCreator
+            fileCreator.createScreenFiles(
+                splitDataClass = splitDataClass,
+                packageName = packageDeclare,
+                psiDirectory = directory,
             )
             val notifyMessage = buildString {
                 append("${splitClasses.size} Kotlin Data Class files generated successful")
-                if (renameClassMap.isNotEmpty()) {
-                    append("\n")
-                    append(
-                        "These class names has been auto renamed to new names:\n ${
-                            renameClassMap.map { it.first + " -> " + it.second }.toList()
-                        }"
-                    )
-                }
+
             }
             showNotify(notifyMessage, project)
         }
@@ -77,89 +62,6 @@ class KotlinClassFileGenerator {
         return directory.files.filter { it.name.endsWith(kotlinFileSuffix) }
             .map { it.name.dropLast(kotlinFileSuffix.length) }
     }
-
-    private fun getRenameClassMap(originNames: List<String>, currentNames: List<String>): List<Pair<String, String>> {
-        if (originNames.size != currentNames.size) {
-            throw IllegalArgumentException("two names list must have the same size!")
-        }
-        val renameMap = mutableListOf<Pair<String, String>>()
-        originNames.forEachIndexed { index, originName ->
-            if (originName != currentNames[index]) {
-                renameMap.add(Pair(originName, currentNames[index]))
-            }
-        }
-        return renameMap
-    }
-
-    private fun generateKotlinClassFile(
-        mappers: List<MappersWithIndex>?,
-        fileName: String,
-        packageDeclare: String,
-        classCodeContent: String,
-        directory: PsiDirectory,
-        fileCreator: FileCreator
-    ) {
-
-        val kotlinFileContent = buildString {
-            if (packageDeclare.isNotEmpty()) {
-                append(packageDeclare)
-                append("\n\n")
-            }
-            val importClassDeclaration = ClassImportDeclaration.getImportClassDeclaration()
-            if (importClassDeclaration.isNotBlank()) {
-                append(importClassDeclaration)
-                append("\n\n")
-            }
-            append(classCodeContent)
-        }
-
-        fileCreator.createScreenFiles(
-            mappers = mappers,
-            packageName = packageDeclare,
-            screenName = fileName.trim('`'),
-            psiDirectory = directory,
-            fileBody = classCodeContent
-        )
-
-    }
-
-    data class MappersWithIndex(
-        val index: Int,
-        val typeObjectName: String,
-        var mapperVariableName: String = typeObjectName,
-        var isGenericListClass: Boolean = false
-    )
-
-
-    private fun getMappers(kotlinClass: KotlinClass): MutableList<MappersWithIndex>? {
-        return if (kotlinClass is DataClass) {
-            val mappersList = mutableListOf<MappersWithIndex>()
-            kotlinClass.properties.forEachIndexed { index, property ->
-                if (property.typeObject is DataClass) mappersList.add(
-                    MappersWithIndex(
-                        index, property.typeObject.name
-                    )
-                )
-                else if (property.typeObject is GenericListClass) mappersList.add(
-                    MappersWithIndex(
-                        index = index,
-                        typeObjectName = remoteSignFromGenericDataTypeName(property.typeObject.name),
-                        isGenericListClass = true
-                    )
-                )
-            }
-            mappersList
-        } else {
-            null
-        }
-    }
-
-    //pic the data inside < > as we are going to used that in onward
-    fun remoteSignFromGenericDataTypeName(objectName: String): String {
-        val regex = "([a-zA-Z]+(_[a-zA-Z]+)+)".toRegex()
-        return regex.find(objectName)?.value ?: objectName
-    }
-
 
 }
 

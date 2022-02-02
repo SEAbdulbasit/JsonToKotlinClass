@@ -1,8 +1,5 @@
 package filegenerator.model
 
-import filegenerator.data.file.getDataClassParamsWithoutAnnotations
-import filegenerator.data.file.getMapperBodyParams
-import wu.seal.jsontokotlin.utils.KotlinClassFileGenerator
 import java.io.Serializable
 
 const val DEFAULT_SOURCE_SET = "main"
@@ -22,15 +19,16 @@ data class ScreenElement(
         screenName: String,
         packageName: String,
         fileBody: String,
-        mappers: String?,
-        mappersIndexes: List<KotlinClassFileGenerator.MappersWithIndex>?,
-        elementName: String
-    ) = template.replaceVariables(screenName, packageName, fileBody, mappers, mappersIndexes, elementName)
+        dataClassParamsWithoutAnnotations: String,
+        mappersDeclaration: String,
+        mappersParams: String,
+    ) = template.replaceVariables(
+        screenName, packageName, fileBody, dataClassParamsWithoutAnnotations, mappersDeclaration, mappersParams
+    )
 
     fun fileName(
         screenName: String,
-        packageName: String,
-    ) = fileNameTemplate.replaceVariableForFileName(screenName, packageName).run {
+    ) = fileNameTemplate.replaceVariableForFileName(screenName).run {
         this
     }
 
@@ -38,20 +36,17 @@ data class ScreenElement(
         screenName: String,
         packageName: String,
         fileBody: String,
-        mappers: String?,
-        mappersIndexes: List<KotlinClassFileGenerator.MappersWithIndex>?,
-        elementName: String
-    ) = replace(Variable.NAME.value, screenName)
-        .replace(Variable.PACKAGE_NAME.value, packageName)
+        dataClassParamsWithoutAnnotations: String,
+        mappersDeclaration: String,
+        mappersParams: String,
+    ) = replace(Variable.NAME.value, screenName).replace(Variable.PACKAGE_NAME.value, packageName)
         .replace(Variable.PACKAGE_DIRECTORY.value, packageName.replace("package", "").trim())
-        .replace(Variable.DATA_CLASS_PARAMS.value, getDataClassParamsWithoutAnnotations(fileBody))
+        .replace(Variable.DATA_CLASS_PARAMS.value, dataClassParamsWithoutAnnotations)
         .replace(Variable.REMOTE_DATA_CLASS.value, fileBody)
-        .replace(Variable.MAPPERS_DECLARATION.value, mappers ?: "")
-        .replace(Variable.MAPPER_DATA_CLASS_VARIABLES.value, getMapperBodyParams(getDataClassParamsWithoutAnnotations(fileBody), mappersIndexes, elementName))
+        .replace(Variable.MAPPERS_DECLARATION.value, mappersDeclaration)
+        .replace(Variable.MAPPER_DATA_CLASS_VARIABLES.value, mappersParams)
 
     private fun String.replaceVariableForFileName(
         screenName: String,
-        packageName: String,
-    ) = replace(Variable.NAME.value, screenName).replace(Variable.PACKAGE_NAME.value, packageName)
-        .replace(Variable.PACKAGE_DIRECTORY.value, packageName.replace("package", "").trim())
+    ) = replace(Variable.NAME.value, screenName)
 }

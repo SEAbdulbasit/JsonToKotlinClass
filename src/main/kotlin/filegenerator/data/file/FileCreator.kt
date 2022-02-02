@@ -3,17 +3,13 @@ package filegenerator.data.file
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDirectory
 import filegenerator.data.repository.SettingsRepository
-import filegenerator.model.ScreenElement
-import wu.seal.jsontokotlin.utils.KotlinClassFileGenerator
+import wu.seal.jsontokotlin.model.classscodestruct.KotlinClass
 
 interface FileCreator {
-
     fun createScreenFiles(
-        mappers: List<KotlinClassFileGenerator.MappersWithIndex>?,
+        splitDataClass: KotlinClass,
         packageName: String,
-        screenName: String,
         psiDirectory: PsiDirectory,
-        fileBody: String,
     )
 }
 
@@ -22,25 +18,32 @@ class FileCreatorImpl constructor(
 ) : FileCreator {
 
     override fun createScreenFiles(
-        mappers: List<KotlinClassFileGenerator.MappersWithIndex>?,
+        splitDataClass: KotlinClass,
         packageName: String,
-        screenName: String,
         psiDirectory: PsiDirectory,
-        fileBody: String,
     ) {
-        val regex = "KKK/?.*?KKK".toRegex()
+
+        val generateFilesFromTemplates = GenerateFilesFromTemplates(splitDataClass)
 
         settingsRepository.loadScreenElements().forEach {
+            generateFilesFromTemplates.setMappers(it)
+            val screenName = generateFilesFromTemplates.getFileName(it)
+            val fileBodyWithRegexApplied = generateFilesFromTemplates.fileBodyWithRegexApplied(it)
+            val mappersDeclaration = generateFilesFromTemplates.mappersDeclaration(it)
+            val dataClassParamsWithOutAnnotations =
+                generateFilesFromTemplates.getDataClassParamsWithOutAnnotations(fileBodyWithRegexApplied)
+            val mappersParams = generateFilesFromTemplates.getMappersParams(dataClassParamsWithOutAnnotations, it)
+
             var file = File(
                 name = it.fileName(
-                    screenName = getScreenName(regex, screenName, it), packageName = packageName
+                    screenName = screenName
                 ), content = it.body(
-                    screenName = getScreenName(regex, screenName, it),
+                    screenName = screenName,
                     packageName = packageName,
-                    fileBody = regex.replace(fileBody, it.fileType.displayName),
-                    mappers = getMappersDeclarations(regex, mappers, it),
-                    mappersIndexes = mappers,
-                    elementName = it.name
+                    fileBody = fileBodyWithRegexApplied,
+                    dataClassParamsWithoutAnnotations = dataClassParamsWithOutAnnotations,
+                    mappersDeclaration = mappersDeclaration,
+                    mappersParams = mappersParams
                 ), fileType = it.fileType
             )
 
@@ -50,45 +53,6 @@ class FileCreatorImpl constructor(
         }
 
     }
-
-    private fun getMappersDeclarations(
-        regex: Regex, mappers: List<KotlinClassFileGenerator.MappersWithIndex>?, it: ScreenElement
-    ) = regex.replace(getMappersDeclaration(mappers, it, regex), it.fileType.displayName)
-
-    private fun getScreenName(
-        regex: Regex, screenName: String, it: ScreenElement
-    ) = regex.replace(screenName, it.fileType.displayName)
-
-    private fun getMappersDeclaration(
-        mappers: List<KotlinClassFileGenerator.MappersWithIndex>?, screenElement: ScreenElement, regex: Regex
-    ): String {
-        var mappersValue = "\n"
-        mappers?.forEach {
-            val mapper = regex.replace(it.typeObjectName, screenElement.fileType.displayName)
-            mappersValue += "val ${toCamelCase(mapper)}${screenElement.name} by lazy { ${it.typeObjectName}${screenElement.name}() }\n"
-
-            it.mapperVariableName = "${toCamelCase(mapper)}${screenElement.name}"
-        }
-        return mappersValue
-    }
-
-    fun toCamelCase(text: String): String {
-        val words: List<String> = text.split("[\\W_]+")
-
-        val builder = StringBuilder()
-        for (i in words.indices) {
-            var word: String = words.get(i)
-            word = if (i == 0) {
-                if (word.isEmpty()) word else word.toLowerCase()
-            } else {
-                if (word.isEmpty()) word else Character.toUpperCase(word[0]).toString() + word.substring(1)
-                    .toLowerCase()
-            }
-            builder.append(word)
-        }
-        return builder.toString()
-    }
-
 
     private fun addFile(directory: PsiDirectory, file: File, subdirectory: String) {
         if (subdirectory.isNotEmpty()) {
@@ -103,7 +67,6 @@ class FileCreatorImpl constructor(
         }
     }
 
-
     fun findCodeSubdirectory(packageName: String, directory: PsiDirectory): PsiDirectory? {
         var subdirectory = directory
         packageName.split(".").forEach {
@@ -111,4 +74,5 @@ class FileCreatorImpl constructor(
         }
         return subdirectory
     }
+
 }
