@@ -28,9 +28,9 @@ class DirectoryImpl(
 
         //format the code
         val styleManager = CodeStyleManager.getInstance(project)
-        styleManager.reformat(psiFile)
+        val formattedPsiFile = styleManager.reformat(psiFile)
 
-        psiDirectory.add(psiFile)
+        psiDirectory.add(formattedPsiFile)
 
 
     }

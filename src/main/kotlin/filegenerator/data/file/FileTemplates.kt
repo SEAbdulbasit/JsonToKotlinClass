@@ -17,13 +17,13 @@ val ENTITY_MAPPER_DATA_CLASS_TEMPLATE =
             "import ${Variable.PACKAGE_DIRECTORY.value}.remote.${Variable.NAME.value}Remote\n" +
             "import ${Variable.PACKAGE_DIRECTORY.value}.entity.model.${Variable.NAME.value}Entity\n\n" +
             "class ${Variable.NAME.value}EntityMapper : EntityMapper<${Variable.NAME.value}Remote, ${Variable.NAME.value}Entity> {\n" +
-            "   ${Variable.MAPPERS_DECLARATION.value}" +
-            "   override fun mapFromItem(model: ${Variable.NAME.value}Entity): ${Variable.NAME.value}Remote {\n" +
+            "   ${Variable.MAPPERS_DECLARATION.value}\n" +
+            "    override fun mapFromItem(model: ${Variable.NAME.value}Entity): ${Variable.NAME.value}Remote {\n" +
             "       return with(model) {\n" +
             "           ${Variable.NAME.value}Remote(${Variable.MAPPER_FROM_ITEM_DATA_CLASS_VARIABLES.value}" + ")\n" +
             "       }\n" +
             "   }\n" +
-            "   override fun mapToItem(model: ${Variable.NAME.value}Remote): ${Variable.NAME.value}Entity {\n" +
+            "    override fun mapToItem(model: ${Variable.NAME.value}Remote): ${Variable.NAME.value}Entity {\n" +
             "       return with(model) {\n" +
             "           ${Variable.NAME.value}Entity(${Variable.MAPPER_TO_ITEM_DATA_CLASS_VARIABLES.value}" + ")\n" +
             "       }\n" +
@@ -35,7 +35,7 @@ val UI_MAPPER_DATA_CLASS_TEMPLATE =
             "import ${Variable.PACKAGE_DIRECTORY.value}.ui.model.${Variable.NAME.value}UiModel\n" +
             "import ${Variable.PACKAGE_DIRECTORY.value}.entity.model.${Variable.NAME.value}Entity\n\n" +
             "class ${Variable.NAME.value}UiMapper : UiMapper<${Variable.NAME.value}Entity, ${Variable.NAME.value}UiModel> {\n" +
-            "   ${Variable.MAPPERS_DECLARATION.value}" +
+            "   ${Variable.MAPPERS_DECLARATION.value}\n" +
             "   override fun mapFromUiModel(model: ${Variable.NAME.value}UiModel): ${Variable.NAME.value}Entity {\n" +
             "       return with(model) {\n" +
             "           ${Variable.NAME.value}Entity(${Variable.MAPPER_FROM_ITEM_DATA_CLASS_VARIABLES.value}" + ")\n" +
