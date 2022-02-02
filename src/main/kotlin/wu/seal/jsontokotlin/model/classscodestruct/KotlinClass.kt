@@ -1,5 +1,6 @@
 package wu.seal.jsontokotlin.model.classscodestruct
 
+import filegenerator.model.Variable
 import wu.seal.jsontokotlin.interceptor.IKotlinClassInterceptor
 import wu.seal.jsontokotlin.model.builder.ICodeBuilder
 import wu.seal.jsontokotlin.utils.IgnoreCaseStringSet
@@ -25,6 +26,7 @@ interface KotlinClass {
      * Indicate if this class code could be modified
      */
     val modifiable: Boolean
+
     /**
      * Indicate if this class contains generic type
      */
@@ -46,9 +48,11 @@ interface KotlinClass {
     fun getOnlyCurrentCode(): String
 
 
-    fun <T : KotlinClass> applyInterceptors(enabledKotlinClassInterceptors: List<IKotlinClassInterceptor<T>>): KotlinClass = this
+    fun <T : KotlinClass> applyInterceptors(enabledKotlinClassInterceptors: List<IKotlinClassInterceptor<T>>): KotlinClass =
+        this
 
-    fun <T : KotlinClass> applyInterceptor(classInterceptor: IKotlinClassInterceptor<T>): KotlinClass = applyInterceptors(listOf(classInterceptor))
+    fun <T : KotlinClass> applyInterceptor(classInterceptor: IKotlinClassInterceptor<T>): KotlinClass =
+        applyInterceptors(listOf(classInterceptor))
 
     fun rename(newName: String): KotlinClass
 
@@ -64,7 +68,8 @@ interface KotlinClass {
             thisNoneConflictName = getNoneConflictClassName(existClassNames, name)
         }
         existClassNames.add(thisNoneConflictName)
-        val classReplaceRule = referencedClasses.filter { it.modifiable }.associateWith { it.resolveNameConflicts(existClassNames) }
+        val classReplaceRule =
+            referencedClasses.filter { it.modifiable }.associateWith { it.resolveNameConflicts(existClassNames) }
         return rename(thisNoneConflictName).replaceReferencedClasses(classReplaceRule)
     }
 
@@ -106,7 +111,9 @@ interface KotlinClass {
     private fun getNoneConflictClassName(existClassNames: Set<String>, conflictClassName: String): String {
         var newNoneConflictClassName = conflictClassName
         while (existClassNames.contains(newNoneConflictClassName)) {
-            newNoneConflictClassName += "X"
+            val regex = "KKK/?.*?KKK".toRegex()
+            newNoneConflictClassName =
+                regex.replace(newNoneConflictClassName, "X" + Variable.KOTLIN_GENERATED_CODE.value)
         }
         return newNoneConflictClassName
     }

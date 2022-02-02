@@ -22,18 +22,25 @@ val UI_MAPPER_DATA_CLASS_TEMPLATE =
 
 
 fun getMapperBodyParams(
-    value: String, mappersIndexes: List<KotlinClassFileGenerator.MappersWithIndex>?, elementName: String
+    value: String, mappersNameAndTheirIndexes: List<KotlinClassFileGenerator.MappersWithIndex>?, elementName: String
 ): String {
     val trimmedStrings = value.replace(Regex("\n|\t"), "").replace(Regex("val |var"), "").replace(Regex("[ ?]"), "")
-        .replace(Regex(":([A-z]*)"), "").replace(Regex(": ([A-z]*)"), "")
+        .replace(Regex(":([A-z]*)"), "").replace(Regex(": ([A-z]*)"), "").replace(Regex("<[a-zA-Z]+>"), "")
 
     val splitStrings = trimmedStrings.split(",")
     var mappedStrings = ""
 
-    splitStrings.forEachIndexed() { index, variableName ->
-        mappedStrings = if (mappersIndexes?.find { it.index == index } != null) {
-            if (index < (splitStrings.size - 1)) "$mappedStrings$variableName = $variableName$elementName.mapToItem($variableName),"
-            else "$mappedStrings$variableName = $variableName$elementName.mapToItem($variableName)"
+    splitStrings.forEachIndexed { index, variableName ->
+        val mapperAtIndex = mappersNameAndTheirIndexes?.find { it.index == index }
+        mappedStrings = if (mapperAtIndex != null) {
+            if (mapperAtIndex.isGenericListClass.not())
+                if (index < (splitStrings.size - 1)) "$mappedStrings$variableName = ${mapperAtIndex.mapperVariableName}.mapToItem($variableName),"
+                else "$mappedStrings$variableName = ${mapperAtIndex.mapperVariableName}.mapToItem($variableName)"
+            else
+                if (index < (splitStrings.size - 1))
+                    "$mappedStrings$variableName =$mappedStrings$variableName.map{ ${mapperAtIndex.mapperVariableName}.mapToItem($variableName)}"
+                else
+                    "$mappedStrings$variableName =$mappedStrings$variableName.map{ ${mapperAtIndex.mapperVariableName}.mapToItem($variableName)}"
         } else {
             if (index < (splitStrings.size - 1)) "$mappedStrings$variableName = $variableName,"
             else "$mappedStrings$variableName = $variableName"

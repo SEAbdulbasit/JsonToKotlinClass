@@ -18,8 +18,7 @@ interface FileCreator {
 }
 
 class FileCreatorImpl constructor(
-    private val settingsRepository: SettingsRepository,
-    private val project: Project
+    private val settingsRepository: SettingsRepository, private val project: Project
 ) : FileCreator {
 
     override fun createScreenFiles(
@@ -33,18 +32,16 @@ class FileCreatorImpl constructor(
 
         settingsRepository.loadScreenElements().forEach {
             var file = File(
-                it.fileName(
-                    regex.replace(screenName, it.fileType.displayName),
-                    packageName
-                ),
-                it.body(
-                    regex.replace(screenName, it.fileType.displayName),
-                    packageName,
-                    regex.replace(fileBody, it.fileType.displayName),
-                    regex.replace(getMappersDeclaration(mappers, it, regex), it.fileType.displayName),
-                    mappers,
-                    it.name
-                ), it.fileType
+                name = it.fileName(
+                    screenName = getScreenName(regex, screenName, it), packageName = packageName
+                ), content = it.body(
+                    screenName = getScreenName(regex, screenName, it),
+                    packageName = packageName,
+                    fileBody = regex.replace(fileBody, it.fileType.displayName),
+                    mappers = getMappersDeclarations(regex, mappers, it),
+                    mappersIndexes = mappers,
+                    elementName = it.name
+                ), fileType = it.fileType
             )
 
             if (psiDirectory != null) {
@@ -54,23 +51,28 @@ class FileCreatorImpl constructor(
 
     }
 
+    private fun getMappersDeclarations(
+        regex: Regex, mappers: List<KotlinClassFileGenerator.MappersWithIndex>?, it: ScreenElement
+    ) = regex.replace(getMappersDeclaration(mappers, it, regex), it.fileType.displayName)
+
+    private fun getScreenName(
+        regex: Regex, screenName: String, it: ScreenElement
+    ) = regex.replace(screenName, it.fileType.displayName)
+
     private fun getMappersDeclaration(
-        mappers: List<KotlinClassFileGenerator.MappersWithIndex>?,
-        screenElement: ScreenElement,
-        regex: Regex
+        mappers: List<KotlinClassFileGenerator.MappersWithIndex>?, screenElement: ScreenElement, regex: Regex
     ): String {
-        var mappersValue = ""
+        var mappersValue = "\n"
         mappers?.forEach {
-            val mapper = regex.replace(it.mapper, screenElement.fileType.displayName)
-            mappersValue += "val ${toCamelCase(mapper)}${screenElement.name} by lazy { ${it.mapper}${screenElement.name}() }\n"
+            val mapper = regex.replace(it.typeObjectName, screenElement.fileType.displayName)
+            mappersValue += "val ${toCamelCase(mapper)}${screenElement.name} by lazy { ${it.typeObjectName}${screenElement.name}() }\n"
+
+            it.mapperVariableName = "${toCamelCase(mapper)}${screenElement.name}"
         }
-
         return mappersValue
-
     }
 
-
-    private fun toCamelCase(text: String): String {
+    fun toCamelCase(text: String): String {
         val words: List<String> = text.split("[\\W_]+")
 
         val builder = StringBuilder()

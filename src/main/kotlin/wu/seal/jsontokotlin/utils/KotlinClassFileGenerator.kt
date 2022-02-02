@@ -4,6 +4,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDirectory
 import filegenerator.data.file.FileCreator
 import wu.seal.jsontokotlin.model.classscodestruct.DataClass
+import wu.seal.jsontokotlin.model.classscodestruct.GenericListClass
 import wu.seal.jsontokotlin.model.classscodestruct.KotlinClass
 
 class KotlinClassFileGenerator {
@@ -122,25 +123,41 @@ class KotlinClassFileGenerator {
 
     }
 
-    data class MappersWithIndex(val index: Int, val mapper: String)
+    data class MappersWithIndex(
+        val index: Int,
+        val typeObjectName: String,
+        var mapperVariableName: String = typeObjectName,
+        var isGenericListClass: Boolean = false
+    )
 
 
-    fun getMappers(kotlinClass: KotlinClass): MutableList<MappersWithIndex>? {
+    private fun getMappers(kotlinClass: KotlinClass): MutableList<MappersWithIndex>? {
         return if (kotlinClass is DataClass) {
             val mappersList = mutableListOf<MappersWithIndex>()
             kotlinClass.properties.forEachIndexed { index, property ->
-                if (property.typeObject is DataClass)
-                    mappersList.add(
-                        MappersWithIndex(
-                            index,
-                            property.typeObject.name
-                        )
+                if (property.typeObject is DataClass) mappersList.add(
+                    MappersWithIndex(
+                        index, property.typeObject.name
                     )
+                )
+                else if (property.typeObject is GenericListClass) mappersList.add(
+                    MappersWithIndex(
+                        index = index,
+                        typeObjectName = remoteSignFromGenericDataTypeName(property.typeObject.name),
+                        isGenericListClass = true
+                    )
+                )
             }
             mappersList
         } else {
             null
         }
+    }
+
+    //pic the data inside < > as we are going to used that in onward
+    fun remoteSignFromGenericDataTypeName(objectName: String): String {
+        val regex = "([a-zA-Z]+(_[a-zA-Z]+)+)".toRegex()
+        return regex.find(objectName)?.value ?: objectName
     }
 
 

@@ -41,14 +41,13 @@ data class ScreenElement(
         mappers: String?,
         mappersIndexes: List<KotlinClassFileGenerator.MappersWithIndex>?,
         elementName: String
-    ) = replace(Variable.NAME.value, screenName).replace(Variable.PACKAGE_NAME.value, packageName)
+    ) = replace(Variable.NAME.value, screenName)
+        .replace(Variable.PACKAGE_NAME.value, packageName)
         .replace(Variable.PACKAGE_DIRECTORY.value, packageName.replace("package", "").trim())
         .replace(Variable.DATA_CLASS_PARAMS.value, getDataClassParamsWithoutAnnotations(fileBody))
-        .replace(Variable.REMOTE_DATA_CLASS.value, fileBody).replace(Variable.MAPPERS_DECLARATION.value, mappers ?: "")
-        .replace(
-            Variable.MAPPER_DATA_CLASS_VARIABLES.value,
-            getMapperBodyParams(getDataClassParamsWithoutAnnotations(fileBody), mappersIndexes, elementName)
-        )
+        .replace(Variable.REMOTE_DATA_CLASS.value, fileBody)
+        .replace(Variable.MAPPERS_DECLARATION.value, mappers ?: "")
+        .replace(Variable.MAPPER_DATA_CLASS_VARIABLES.value, getMapperBodyParams(getDataClassParamsWithoutAnnotations(fileBody), mappersIndexes, elementName))
 
     private fun String.replaceVariableForFileName(
         screenName: String,
