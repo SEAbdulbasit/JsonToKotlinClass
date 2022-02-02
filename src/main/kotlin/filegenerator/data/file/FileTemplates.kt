@@ -33,14 +33,18 @@ fun getMapperBodyParams(
     splitStrings.forEachIndexed { index, variableName ->
         val mapperAtIndex = mappersNameAndTheirIndexes?.find { it.index == index }
         mappedStrings = if (mapperAtIndex != null) {
-            if (mapperAtIndex.isGenericListClass.not())
-                if (index < (splitStrings.size - 1)) "$mappedStrings$variableName = ${mapperAtIndex.mapperVariableName}.mapToItem($variableName),"
-                else "$mappedStrings$variableName = ${mapperAtIndex.mapperVariableName}.mapToItem($variableName)"
-            else
-                if (index < (splitStrings.size - 1))
-                    "$mappedStrings$variableName =$mappedStrings$variableName.map{ ${mapperAtIndex.mapperVariableName}.mapToItem($variableName)}"
-                else
-                    "$mappedStrings$variableName =$mappedStrings$variableName.map{ ${mapperAtIndex.mapperVariableName}.mapToItem($variableName)}"
+
+            if (mapperAtIndex.isGenericListClass.not()) {
+                if (index < (splitStrings.size - 1)) {
+                    "$mappedStrings$variableName = ${mapperAtIndex.mapperVariableName}.mapToItem($variableName),"
+                } else {
+                    "$mappedStrings$variableName = ${mapperAtIndex.mapperVariableName}.mapToItem($variableName)"
+                }
+            } else if (index < (splitStrings.size - 1)) {
+                "$mappedStrings$variableName =$variableName.map{ ${mapperAtIndex.mapperVariableName}.mapToItem(it)},"
+            } else {
+                "$mappedStrings$variableName =$variableName.map{ ${mapperAtIndex.mapperVariableName}.mapToItem(it)}"
+            }
         } else {
             if (index < (splitStrings.size - 1)) "$mappedStrings$variableName = $variableName,"
             else "$mappedStrings$variableName = $variableName"
