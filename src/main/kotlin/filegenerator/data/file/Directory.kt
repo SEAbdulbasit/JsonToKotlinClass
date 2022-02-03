@@ -6,6 +6,7 @@ import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.codeStyle.CodeStyleManager
 import wu.seal.jsontokotlin.filetype.KotlinFileType
 
+
 interface Directory {
     fun findSubdirectory(name: String): Directory?
     fun createSubdirectory(name: String): Directory
@@ -13,8 +14,7 @@ interface Directory {
 }
 
 class DirectoryImpl(
-    private val project: Project,
-    private val psiDirectory: PsiDirectory
+    private val project: Project, private val psiDirectory: PsiDirectory
 ) : Directory {
 
     override fun findSubdirectory(name: String) =
@@ -25,6 +25,7 @@ class DirectoryImpl(
     override fun addFile(file: File) {
         val psiFile = PsiFileFactory.getInstance(project)
             .createFileFromText("${file.name}.${file.fileType.extension}", KotlinFileType(), file.content)
+
 
         //format the code
         val styleManager = CodeStyleManager.getInstance(project)

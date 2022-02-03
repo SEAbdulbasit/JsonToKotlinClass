@@ -1,47 +1,10 @@
 <idea-plugin>
-    <id>wu.seal.tool.jsontokotlin</id>
-    <name>JSON To Kotlin Class (JsonToKotlinClass)</name>
+    <id>wu.seal.tool.jsontokotlinwithuiandentity</id>
+    <name>JSON To Kotlin With Entity Remote Classes</name>
     <vendor email="sealkingking@163.com" url="https://www.github.com/wuseal">Seal</vendor>
 
     <description><![CDATA[
       <br>Plugin for Kotlin to convert Json String into Kotlin data class code quickly</br>
-
-      <br> Fast use it with short cut key ALT + K on Windows or Option + K on Mac</br>
-
-      <b><br>Features:</br></b>
-
-        <br>Generating Kotlin class from any legal JSON string/JSONSchema or any URLs that returns a JSON string/JSONSchema as response
-        <br>Generating Kotlin class from any legal JSON text when right click on directory and select New -> Kotlin class File from JSON</br>
-        <br>Supporting (almostly) all kinds of JSON libs' annotation(Gson, Jackson, Fastjson, MoShi and LoganSquare, kotlinx.serialization(default custom value))</br>
-        <br>Customizing your own annotations</br>
-        <br>Initializing properties with default values</br>
-        <br>Allowing properties to be nullable(?)</br>
-        <br>Determining property nullability automatically</br>
-        <br>Renaming property names to be camelCase style when selecting a target JSON lib annotation．</br>
-        <br>Generating Kotlin class as individual classes</br>
-        <br>Generating Kotlin class as inner classes</br>
-        <br>Formatting any legal JSON string</br>
-        <br>Generating Map Type when json key is primitive type</br>
-        <br>Only create annotation when needed</br>
-        <br>Custom define data class parent class</br>
-        <br>Sort property order by Alphabetical</br>
-        <br>Make keyword property valid</br>
-        <br>Support Loading JSON From Paster/Local File/Http URL</br>
-        <br>Support customize your own plugin by Extension Module</br>
-        <br></br>
-
-        <p><img src="https://plugins.jetbrains.com/files/9960/screenshot_18032.png" alt="demo" width="600" height="360"></p>
-
-      <em>kotlin</em>
-      <em>Json</em>
-      <em>Gson</em>
-      <em>Fastjson</em>
-      <em>Moshi</em>
-      <em>LoganSquare</em>
-      <em>Kotlinx<em>
-
-      <br></br>
-     <a href="https://github.com/wuseal/JsonToKotlinClass"> Full Usage Documentation</a></br>
 
     ]]></description>
 
@@ -61,8 +24,8 @@
     </extensions>
 
     <actions>
-        <action id="wu.seal.wu.seal.jsontokotlin.makekotlindata" class="wu.seal.jsontokotlin.InsertKotlinClassAction"
-                text="Kotlin Data Classes from JSON"
+        <action id="wu.seal.wu.seal.jsontokotlin.makekotlindatawithothermodels" class="wu.seal.jsontokotlin.InsertKotlinClassAction"
+                text="Kotlin Remote, UI and Entity Classes from JSON"
                 description="Convert a json string data into kotlin data class code">
             <add-to-group group-id="GenerateGroup" anchor="last"/>
             <keyboard-shortcut keymap="$default" first-keystroke="alt k"/>
@@ -70,9 +33,9 @@
 
         <action id="wu.seal.wu.seal.jsontokotlin.GenerateKotlinFileAction"
                 class="wu.seal.jsontokotlin.GenerateKotlinFileAction"
-                text="Kotlin Data Class File from JSON"
+                text="Kotlin Remote, UI and Entity Class File from JSON"
                 icon="/icons/action.png"
-                description="Generate Kotlin data class File from JSON">
+                description="Generate Kotlin along with data class File from JSON">
             <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
         </action>
 

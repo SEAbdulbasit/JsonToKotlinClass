@@ -26,7 +26,7 @@ import wu.seal.jsontokotlin.utils.KotlinClassMaker
 /**
  * Created by Seal.Wu on 2018/4/18.
  */
-class GenerateKotlinFileAction : AnAction("Kotlin data class File from JSON") {
+class GenerateKotlinFileAction : AnAction() {
 
     override fun actionPerformed(event: AnActionEvent) {
         var jsonString = ""
