@@ -106,7 +106,7 @@ class JsonInputDialog(classsName: String, private val project: Project) : Messag
                         fixedSpace(3)
                         jHorizontalLinearLayout {
                             jLabel("Package: ", 14f)
-                            fixedSpace(12)
+                            fixedSpace(22)
                             packageNameInput = createTextFieldComponent()
 
                             add(
@@ -117,14 +117,7 @@ class JsonInputDialog(classsName: String, private val project: Project) : Messag
                         jHorizontalLinearLayout {
                             jButton("Advanced", { AdvancedDialog(false).show() })
                             fillSpace()
-                            jLabel("Like this version? Please star here: ")
-                            jLink(
-                                "https://github.com/wuseal/JsonToKotlinClass",
-                                "https://github.com/wuseal/JsonToKotlinClass",
-                                maxSize = JBDimension(210, 30)
-                            ) {
-                                sendActionInfo(prettyGson.toJson(ClickProjectURLAction()))
-                            }
+
                         }
                     }
                 }
