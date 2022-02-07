@@ -14,7 +14,6 @@ import com.intellij.psi.impl.file.PsiDirectoryFactory
 import filegenerator.data.file.FileCreator
 import filegenerator.data.file.FileCreatorImpl
 import filegenerator.data.repository.SettingsRepositoryImpl
-import wu.seal.jsontokotlin.feedback.dealWithException
 import wu.seal.jsontokotlin.interceptor.InterceptorManager
 import wu.seal.jsontokotlin.model.ConfigManager
 import wu.seal.jsontokotlin.model.UnSupportJsonException
@@ -36,17 +35,12 @@ class GenerateKotlinFileAction : AnAction() {
             val dataContext = event.dataContext
             val module = LangDataKeys.MODULE.getData(dataContext) ?: return
 
-            val inputDialog = JsonInputDialog("", project)
-            inputDialog.show()
-
             var directory = when (val navigatable = LangDataKeys.NAVIGATABLE.getData(dataContext)) {
                 is PsiDirectory -> navigatable
                 is PsiFile -> navigatable.containingDirectory
                 else -> {
                     val root = ModuleRootManager.getInstance(module)
-                    root.sourceRoots
-                        .asSequence()
-                        .mapNotNull {
+                    root.sourceRoots.asSequence().mapNotNull {
                             PsiManager.getInstance(project).findDirectory(it)
                         }.firstOrNull()
                 }
@@ -55,29 +49,29 @@ class GenerateKotlinFileAction : AnAction() {
             val settingsRepository = SettingsRepositoryImpl()
             val fileCreator = FileCreatorImpl(settingsRepository, project)
 
+
+            val inputDialog = JsonInputDialog("", project)
+            inputDialog.show()
+
+            val className = inputDialog.getClassName()
+            val inputString = inputDialog.inputString.takeIf { it.isNotEmpty() } ?: return
+
             directory = fileCreator.findCodeSubdirectory(inputDialog.getPackage(), directory)!!
 
             val directoryFactory = PsiDirectoryFactory.getInstance(directory.project)
             val packageName = directoryFactory.getQualifiedName(directory, false)
             val packageDeclare = if (packageName.isNotEmpty()) "package $packageName" else ""
 
-            val className = inputDialog.getClassName()
-            val inputString = inputDialog.inputString.takeIf { it.isNotEmpty() } ?: return
-
             jsonString = inputString
             doGenerateKotlinDataClassFileAction(
-                className,
-                inputString,
-                packageDeclare,
-                project,
-                directory,
-                fileCreator
+                className, inputString, packageDeclare, project, directory, fileCreator
             )
         } catch (e: UnSupportJsonException) {
             val advice = e.advice
             Messages.showInfoMessage(dealWithHtmlConvert(advice), "Tip")
         } catch (e: Throwable) {
-            dealWithException(jsonString, e)
+            e.printStackTrace()
+            //dealWithException(jsonString, e)
             throw e
         }
     }
@@ -98,19 +92,11 @@ class GenerateKotlinFileAction : AnAction() {
         if (ConfigManager.isInnerClassModel) {
 
             KotlinClassFileGenerator().generateSingleKotlinClassFile(
-                packageDeclare,
-                dataClassAfterApplyInterceptor,
-                project,
-                directory,
-                fileCreator
+                packageDeclare, dataClassAfterApplyInterceptor, project, directory, fileCreator
             )
         } else {
             KotlinClassFileGenerator().generateMultipleKotlinClassFiles(
-                dataClassAfterApplyInterceptor,
-                packageDeclare,
-                project,
-                directory,
-                fileCreator
+                dataClassAfterApplyInterceptor, packageDeclare, project, directory, fileCreator
             )
         }
     }

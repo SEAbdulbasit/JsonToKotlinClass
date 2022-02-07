@@ -24,12 +24,12 @@
     </extensions>
 
     <actions>
-        <action id="wu.seal.wu.seal.jsontokotlin.makekotlindatawithothermodels" class="wu.seal.jsontokotlin.InsertKotlinClassAction"
-                text="Kotlin Remote, UI and Entity Classes from JSON"
-                description="Convert a json string data into kotlin data class code">
-            <add-to-group group-id="GenerateGroup" anchor="last"/>
-            <keyboard-shortcut keymap="$default" first-keystroke="alt k"/>
-        </action>
+        <!--        <action id="wu.seal.wu.seal.jsontokotlin.makekotlindatawithothermodels" class="wu.seal.jsontokotlin.InsertKotlinClassAction"-->
+        <!--                text="Kotlin Remote, UI and Entity Classes from JSON"-->
+        <!--                description="Convert a json string data into kotlin data class code">-->
+        <!--            <add-to-group group-id="GenerateGroup" anchor="last"/>-->
+        <!--            <keyboard-shortcut keymap="$default" first-keystroke="alt k"/>-->
+        <!--        </action>-->
 
         <action id="wu.seal.wu.seal.jsontokotlin.GenerateKotlinFileAction"
                 class="wu.seal.jsontokotlin.GenerateKotlinFileAction"
