@@ -4,6 +4,7 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.LangDataKeys
 import com.intellij.openapi.actionSystem.PlatformDataKeys
+import com.intellij.openapi.application.runWriteAction
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.ui.Messages
@@ -56,16 +57,18 @@ class GenerateKotlinFileWithUIAndEntityClassesAction : AnAction("Kotlin Remote, 
             val className = inputDialog.getClassName()
             val inputString = inputDialog.inputString.takeIf { it.isNotEmpty() } ?: return
 
-            directory = fileCreator.findCodeSubdirectory(inputDialog.getPackage(), directory)!!
+            runWriteAction {
+                directory = fileCreator.findCodeSubdirectory(inputDialog.getPackage(), directory)!!
 
-            val directoryFactory = PsiDirectoryFactory.getInstance(directory.project)
-            val packageName = directoryFactory.getQualifiedName(directory, false)
-            val packageDeclare = if (packageName.isNotEmpty()) "package $packageName" else ""
+                val directoryFactory = PsiDirectoryFactory.getInstance(directory.project)
+                val packageName = directoryFactory.getQualifiedName(directory, false)
+                val packageDeclare = if (packageName.isNotEmpty()) "package $packageName" else ""
 
-            jsonString = inputString
-            doGenerateKotlinDataClassFileAction(
-                className, inputString, packageDeclare, project, directory, fileCreator
-            )
+                jsonString = inputString
+                doGenerateKotlinDataClassFileAction(
+                    className, inputString, packageDeclare, project, directory, fileCreator
+                )
+            }
         } catch (e: UnSupportJsonException) {
             val advice = e.advice
             Messages.showInfoMessage(dealWithHtmlConvert(advice), "Tip")
