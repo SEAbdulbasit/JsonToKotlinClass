@@ -31,11 +31,11 @@
         <!--            <keyboard-shortcut keymap="$default" first-keystroke="alt k"/>-->
         <!--        </action>-->
 
-        <action id="wu.seal.wu.seal.jsontokotlin.GenerateKotlinFileAction"
-                class="wu.seal.jsontokotlin.GenerateKotlinFileAction"
+        <action id="wu.seal.wu.seal.jsontokotlin.GenerateKotlinFileWithUIAndEntityClassesAction"
+                class="wu.seal.jsontokotlin.GenerateKotlinFileWithUIAndEntityClassesAction"
                 text="Kotlin Remote, UI and Entity Class File from JSON"
                 icon="/icons/action.png"
-                description="Generate Kotlin along with data class File from JSON">
+                description="Kotlin Remote, UI and Entity Class File from JSON">
             <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
         </action>
 

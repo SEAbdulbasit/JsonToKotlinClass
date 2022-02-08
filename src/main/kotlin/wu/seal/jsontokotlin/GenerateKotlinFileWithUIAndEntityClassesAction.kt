@@ -25,7 +25,7 @@ import wu.seal.jsontokotlin.utils.KotlinClassMaker
 /**
  * Created by Seal.Wu on 2018/4/18.
  */
-class GenerateKotlinFileAction : AnAction() {
+class GenerateKotlinFileWithUIAndEntityClassesAction : AnAction("Kotlin Remote, UI and Entity Class File from JSON") {
 
     override fun actionPerformed(event: AnActionEvent) {
         var jsonString = ""
