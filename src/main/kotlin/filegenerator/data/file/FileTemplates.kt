@@ -47,3 +47,22 @@ val UI_MAPPER_DATA_CLASS_TEMPLATE =
             "       }\n" +
             "   }\n" + "}"
 
+val GIT_IGNORE_TEMPLATE = "/build"
+val GRADLE_KTS = "plugins {\n" +
+        "    id(\"java-library\")\n" +
+        "    id(\"kotlin\")\n" +
+        "    id(\"kotlin-kapt\")\n" +
+        "}\n" +
+        "\n" +
+        "dependencies {\n" +
+        "    implementation(Libs.STDLIB)\n" +
+        "    api(Libs.MOSHI)\n" +
+        "    api(project(Libs.Projects.LIBS_BASE_MODELS))\n" +
+        "    kapt(Libs.MOSHI_KOTLIN_CODE_GEN)\n" +
+        "}\n" +
+        "\n" +
+        "java {\n" +
+        "    sourceCompatibility = JavaVersion.VERSION_1_7\n" +
+        "    targetCompatibility = JavaVersion.VERSION_1_7\n" +
+        "}"
+

@@ -38,6 +38,13 @@
                 description="Kotlin Remote, UI and Entity Class File from JSON">
             <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
         </action>
+<!--        <action id="wu.seal.wu.seal.jsontokotlin.CreateNewDataModuleAction"-->
+<!--                class="wu.seal.jsontokotlin.CreateNewDataModuleAction"-->
+<!--                text="Create new Data Module"-->
+<!--                icon="/icons/action.png"-->
+<!--                description="Kotlin Remote, UI and Entity Class File from JSON">-->
+<!--            <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>-->
+<!--        </action>-->
 
     </actions>
 </idea-plugin>

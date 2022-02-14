@@ -226,10 +226,14 @@ class JsonInputDialog(classsName: String, private val project: Project) : Messag
     }
 
     fun getPackage(): String {
-        return if (exitCode == 0) {
-            val name = packageNameInput.text.trim()
-            name.let { if (it.first().isDigit() || it.contains('$')) "`$it`" else it }
-        } else ""
+        return try {
+            if (exitCode == 0) {
+                val name = (packageNameInput.text ?: "").trim()
+                name?.let { if (it.first().isDigit() || it.contains('$')) "`$it`" else it }
+            } else ""
+        } catch (e: Exception) {
+            ""
+        }
     }
 
     override fun getInputString(): String = if (exitCode == 0) jsonContentEditor.document.text.trim() else ""
