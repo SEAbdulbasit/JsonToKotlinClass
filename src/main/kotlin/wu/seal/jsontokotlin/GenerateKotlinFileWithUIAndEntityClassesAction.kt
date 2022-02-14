@@ -4,7 +4,10 @@ import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.LangDataKeys
 import com.intellij.openapi.actionSystem.PlatformDataKeys
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.application.runWriteAction
+import com.intellij.openapi.command.CommandProcessor
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.module.ModuleTypeId
@@ -14,6 +17,7 @@ import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiFile
@@ -53,6 +57,7 @@ class GenerateKotlinFileWithUIAndEntityClassesAction : AnAction("Kotlin Remote, 
             val inputDialog = JsonInputDialog("", project)
             inputDialog.show()
 
+
             val className = inputDialog.getClassName()
             val packageName = inputDialog.getPackage()
 
@@ -76,6 +81,11 @@ class GenerateKotlinFileWithUIAndEntityClassesAction : AnAction("Kotlin Remote, 
                     generateDirectoryAndCodeFiles(
                         subdirectory, fileCreator, packageName.replace("-", ""), inputString, className, project
                     )
+
+                    val moduleDeclaration = directory.toString().split(project.basePath!!)[1].replace("/", ":")
+
+                    updateGradleSettingsAndAddTheModule(project, moduleDeclaration)
+
                 }
 
             } else {
@@ -193,5 +203,31 @@ class GenerateKotlinFileWithUIAndEntityClassesAction : AnAction("Kotlin Remote, 
             throw AssertionError("Unable to create the project sub file: " + f.absolutePath)
         }
         return LocalFileSystem.getInstance().refreshAndFindFileByIoFile(f)!!
+    }
+
+    private fun updateGradleSettingsAndAddTheModule(project: Project, moduleDeclaration: String) {
+        val file = VfsUtil.findFileByIoFile(File(project.basePath + "/settings.gradle.kts"), true) ?: return
+        // file not found
+
+        if (file.fileType.isBinary) return  // file is binary
+
+
+        val document = FileDocumentManager.getInstance().getDocument(file) ?: return
+        // can't read the file. Ex: it is too big
+
+        document.text
+
+
+        CommandProcessor.getInstance().executeCommand(project, {
+            ApplicationManager.getApplication().runWriteAction {
+                val documentText = document.text
+                if (documentText.endsWith("\n")) {
+                    document.setText(document.text + "include(\"$moduleDeclaration\")\n")
+
+                } else {
+                    document.setText(document.text + "\ninclude(\"$moduleDeclaration\")\n")
+                }
+            }
+        }, "Update android manifest", null)
     }
 }
