@@ -84,8 +84,7 @@ class GenerateKotlinFileWithUIAndEntityClassesAction : AnAction("Kotlin Remote, 
                         subdirectory, fileCreator, packageName.replace("-", ""), inputString, className, project
                     )
 
-                    val moduleDeclaration = directory.toString().split(project.basePath!!)[1].replace("/", ":")
-
+                    val moduleDeclaration = directory.toString().split(project.name!!)[1].replace("\\", ":").replace("/", ":")
                     updateGradleSettingsAndAddTheModule(project, moduleDeclaration)
 
                 }
@@ -223,7 +222,7 @@ class GenerateKotlinFileWithUIAndEntityClassesAction : AnAction("Kotlin Remote, 
 
         CommandProcessor.getInstance().executeCommand(project, {
             ApplicationManager.getApplication().runWriteAction {
-                val documentText = document.text
+                val documentText = document.text.trim()
                 if (documentText.endsWith("\n")) {
                     document.setText(document.text + "include(\"$moduleDeclaration\")\n")
 
