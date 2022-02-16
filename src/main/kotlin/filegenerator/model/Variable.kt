@@ -10,4 +10,5 @@ enum class Variable(val value: String, val description: String) {
     MAPPER_FROM_ITEM_DATA_CLASS_VARIABLES("%mapperFromItemDataClassVariables%", "Mapper Data class variables"),
     KOTLIN_GENERATED_CODE("KKKOTLIN_GENERATED_CODEKKK", "Mapper Data class variables"),
     MAPPERS_DECLARATION("%mappersDeclaration%", "Mapper declaration"),
+    MODULE_NAME("%moduleName%", "Mapper declaration"),
 }

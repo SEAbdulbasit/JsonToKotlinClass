@@ -12,6 +12,7 @@ import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.module.ModuleTypeId
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.projectRoots.SdkModel
 import com.intellij.openapi.roots.ContentEntry
 import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.ui.Messages
@@ -60,6 +61,7 @@ class GenerateKotlinFileWithUIAndEntityClassesAction : AnAction("Kotlin Remote, 
 
             val className = inputDialog.getClassName()
             val packageName = inputDialog.getPackage()
+            val isAndroidModule = inputDialog.getIsAndroidModuleFlag()
 
             val inputString = inputDialog.inputString.takeIf { it.isNotEmpty() } ?: return
 
@@ -67,16 +69,16 @@ class GenerateKotlinFileWithUIAndEntityClassesAction : AnAction("Kotlin Remote, 
                 runWriteAction {
                     val moduleName = packageName.split(".").last()
                     val module = customModuleSetup(project, module, moduleName)
+
                     val moduleFilesCreator = ModuleFileCreatorImpl(settingsRepository, project)
                     var directory: PsiDirectory? =
                         ModuleRootManager.getInstance(module).sourceRoots.asSequence().mapNotNull {
                             PsiManager.getInstance(project).findDirectory(it)
                         }.firstOrNull() ?: return@runWriteAction
 
-                    moduleFilesCreator.createModuleFiles("", directory!!)
+                    moduleFilesCreator.createModuleFiles("", directory!!, isAndroidModule, moduleName)
 
-                    val subdirectory =
-                        directory.createSubdirectory("src").createSubdirectory("main").createSubdirectory("java")
+                    val subdirectory = fileCreator.findCodeSubdirectory("src.main.java", directory)!!
 
                     generateDirectoryAndCodeFiles(
                         subdirectory, fileCreator, packageName.replace("-", ""), inputString, className, project
@@ -136,7 +138,7 @@ class GenerateKotlinFileWithUIAndEntityClassesAction : AnAction("Kotlin Remote, 
         val packageDeclare = if (packageName.isNotEmpty()) "package $packageName" else ""
 
         doGenerateKotlinDataClassFileAction(
-            className, inputString, packageDeclare, project, directory1, fileCreator
+            className, inputString, packageDeclare.replace("src.main.java.",""), project, directory1, fileCreator
         )
     }
 
@@ -181,6 +183,7 @@ class GenerateKotlinFileWithUIAndEntityClassesAction : AnAction("Kotlin Remote, 
 
 
             val model = ModuleRootManager.getInstance(module).modifiableModel
+            model.inheritSdk()
             val contentEntry: ContentEntry = model.addContentEntry(f.parent)
             contentEntry.addSourceFolder(contentEntry.file?.url!!, false)
             model.commit()

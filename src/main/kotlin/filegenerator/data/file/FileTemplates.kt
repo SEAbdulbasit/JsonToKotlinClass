@@ -66,3 +66,42 @@ val GRADLE_KTS = "plugins {\n" +
         "    targetCompatibility = JavaVersion.VERSION_1_7\n" +
         "}"
 
+val ANDROID_GRADLE_KTS = "plugins {\n" +
+        "    id(\"com.android.library\")\n" +
+        "    id(\"kotlin-android\")\n" +
+        "    id(\"kotlin-android-extensions\")\n" +
+        "    id(\"kotlin-kapt\")\n" +
+        "}\n" +
+        "\n" +
+        "android {\n" +
+        "    compileSdkVersion(Versions.COMPILE_SDK)\n" +
+        "\n" +
+        "    defaultConfig {\n" +
+        "        minSdkVersion(Versions.MIN_SDK)\n" +
+        "        targetSdkVersion(Versions.TARGET_SDK)\n" +
+        "        versionCode = Versions.VERSION_CODE\n" +
+        "        versionName = Versions.VERSION_NAME\n" +
+        "        multiDexEnabled = true\n" +
+        "    }\n" +
+        "\n" +
+        "    buildTypes {\n" +
+        "        getByName(\"release\") {\n" +
+        "            isMinifyEnabled = false\n" +
+        "            proguardFiles(getDefaultProguardFile(\"proguard-android.txt\"), \"proguard-rules.pro\")\n" +
+        "        }\n" +
+        "    }\n" +
+        "}\n" +
+        "\n" +
+        "dependencies {\n" +
+        "    implementation(Libs.STDLIB)\n" +
+        "    api(Libs.MOSHI)\n" +
+        "    api(project(Libs.Projects.LIBS_BASE_MODELS))\n" +
+        "    kapt(Libs.MOSHI_KOTLIN_CODE_GEN)\n" +
+        "    kapt(Libs.MOSHI_KOTLIN_CODE_GEN)\n" +
+        "}\n" +
+        "\n" +
+        "java {\n" +
+        "    sourceCompatibility = JavaVersion.VERSION_1_7\n" +
+        "    targetCompatibility = JavaVersion.VERSION_1_7\n" +
+        "}"
+val ANDROID_MANIFEST = "<manifest package=\"io.swvl.${Variable.MODULE_NAME.value}\" />\n"

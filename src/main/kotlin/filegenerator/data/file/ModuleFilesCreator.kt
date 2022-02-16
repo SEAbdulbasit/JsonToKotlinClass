@@ -3,11 +3,14 @@ package filegenerator.data.file
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDirectory
 import filegenerator.data.repository.SettingsRepository
+import filegenerator.model.Variable
 
 interface ModuleFilesCreator {
     fun createModuleFiles(
         packageName: String,
         psiDirectory: PsiDirectory,
+        isAndroidModule: Boolean,
+        moduleName: String
     )
 
 }
@@ -19,13 +22,20 @@ class ModuleFileCreatorImpl constructor(
     override fun createModuleFiles(
         packageName: String,
         psiDirectory: PsiDirectory,
+        isAndroidModule: Boolean,
+        moduleName: String
     ) {
 
-        settingsRepository.loadModuleElements().forEach {
+        val element = if (isAndroidModule) {
+            settingsRepository.loadAndroidModuleElements()
+        } else {
+            settingsRepository.loadModuleElements()
+        }
+        element.forEach {
             var file = File(
                 name = it.fileName(
                     screenName = it.name
-                ), content = it.template, fileType = it.fileType
+                ), content = it.template.replace(Variable.MODULE_NAME.value, moduleName), fileType = it.fileType
             )
 
             if (psiDirectory != null) {

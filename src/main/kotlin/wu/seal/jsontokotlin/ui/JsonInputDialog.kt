@@ -13,6 +13,7 @@ import com.intellij.openapi.fileChooser.FileChooserDescriptor
 import com.intellij.openapi.progress.util.DispatchThreadProgressWindow
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
+import com.intellij.ui.components.CheckBox
 import com.intellij.util.ui.JBDimension
 import wu.seal.jsontokotlin.feedback.ClickProjectURLAction
 import wu.seal.jsontokotlin.feedback.FormatJSONAction
@@ -47,6 +48,7 @@ class JsonInputDialog(classsName: String, private val project: Project) : Messag
 ) {
     private lateinit var jsonContentEditor: Editor
     private lateinit var packageNameInput: JTextComponent
+    private lateinit var androidModuleCheckBox: JCheckBox
 
     private val prettyGson: Gson = GsonBuilder().setPrettyPrinting().serializeNulls().disableHtmlEscaping().create()
 
@@ -112,6 +114,14 @@ class JsonInputDialog(classsName: String, private val project: Project) : Messag
                             add(
                                 packageNameInput
                             )
+                        }
+                        jHorizontalLinearLayout {
+                            androidModuleCheckBox = CheckBox(text = "Is Android Module", selected = false)
+
+                            add(
+                                androidModuleCheckBox
+                            )
+                            fillSpace()
                         }
                         fixedSpace(7)
                         jHorizontalLinearLayout {
@@ -223,6 +233,11 @@ class JsonInputDialog(classsName: String, private val project: Project) : Messag
             val name = myField.text.trim()
             name.let { if (it.first().isDigit() || it.contains('$')) "`$it`" else it }
         } else ""
+    }
+
+    fun getIsAndroidModuleFlag(): Boolean {
+        return androidModuleCheckBox.isSelected
+
     }
 
     fun getPackage(): String {

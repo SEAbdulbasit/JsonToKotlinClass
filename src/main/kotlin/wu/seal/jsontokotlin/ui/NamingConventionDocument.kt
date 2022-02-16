@@ -16,7 +16,7 @@ class NamingConventionDocument(maxLength: Int) : PlainDocument() {
         if (take <= 0) return
         super.insertString(
                 offs,
-                str.filter { it.isLetterOrDigit() || it in listOf('_', '$','.') }.take(take),
+                str.filter { it.isLetterOrDigit() || it in listOf('_', '$','.','-') }.take(take),
                 a
         )
     }

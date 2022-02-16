@@ -50,6 +50,31 @@ fun moduleElements() = mutableListOf(
         fileNameTemplate = FileType.BUILD_GRADLE.fileNameTemplate,
         subdirectory = ""
     ),
-    )
+)
+
+fun androidModuleElements() = mutableListOf(
+    ScreenElement(
+        name = "",
+        template = FileType.GIT_IGNORE.bodyTemplate,
+        fileType = FileType.GIT_IGNORE,
+        fileNameTemplate = FileType.GIT_IGNORE.fileNameTemplate,
+        subdirectory = ""
+    ),
+    ScreenElement(
+        name = "build.gradle.kts",
+        template = FileType.ANDROID_BUILD_GRADLE.bodyTemplate,
+        fileType = FileType.ANDROID_BUILD_GRADLE,
+        fileNameTemplate = FileType.ANDROID_BUILD_GRADLE.fileNameTemplate,
+        subdirectory = ""
+    ),
+
+    ScreenElement(
+        name = "AndroidManifest.xml",
+        template = FileType.ANDROID_XML.bodyTemplate,
+        fileType = FileType.ANDROID_XML,
+        fileNameTemplate = FileType.ANDROID_XML.fileNameTemplate,
+        subdirectory = "src/main"
+    ),
+)
 
 
