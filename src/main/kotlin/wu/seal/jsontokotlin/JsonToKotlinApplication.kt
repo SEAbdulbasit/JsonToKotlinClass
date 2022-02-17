@@ -22,9 +22,9 @@ class JsonToKotlinApplication : StartupActivity, DumbAware {
 
         Thread {
             try {
-                sendConfigInfo()
-                sendHistoryExceptionInfo()
-                sendHistoryActionInfo()
+                //sendConfigInfo()
+                //sendHistoryExceptionInfo()
+                //sendHistoryActionInfo()
             } catch (e: Exception) {
                 LogUtil.e(e.message.toString(),e)
             }
