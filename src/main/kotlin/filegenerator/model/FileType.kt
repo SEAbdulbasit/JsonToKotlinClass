@@ -2,6 +2,10 @@ package filegenerator.model
 
 import filegenerator.data.file.*
 
+/**
+ * Created by abdulbasit on 05/02/2022.
+ */
+
 private val KOTLIN_DEFAULT_FILE_NAME = "${Variable.NAME.value}"
 private val UI_MAPPER_NAME = "${Variable.NAME.value}UiMapper"
 private val ENTITY_MAPPER_NAME = "${Variable.NAME.value}EntityMapper"

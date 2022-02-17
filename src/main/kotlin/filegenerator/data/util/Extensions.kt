@@ -1,5 +1,9 @@
 package filegenerator.data.util
 
+/**
+ * Created by abdulbasit on 08/02/2022.
+ */
+
 fun String.toSnakeCase() = replace(Regex("([^_A-Z])([A-Z])"), "$1_$2").toLowerCase()
 
 fun String.toCamelCase(): String {

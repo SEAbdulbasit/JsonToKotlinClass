@@ -8,6 +8,10 @@ import wu.seal.jsontokotlin.model.classscodestruct.DataClass
 import wu.seal.jsontokotlin.model.classscodestruct.GenericListClass
 import wu.seal.jsontokotlin.model.classscodestruct.KotlinClass
 
+/**
+ * Created by abdulbasit on 08/02/2022.
+ */
+
 class GenerateFilesFromTemplates(val kotlinClass: KotlinClass) {
 
     val regex = "KKK/?.*?KKK".toRegex()

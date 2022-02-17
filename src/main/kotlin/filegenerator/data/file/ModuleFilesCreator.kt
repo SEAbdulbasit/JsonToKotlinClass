@@ -5,6 +5,10 @@ import com.intellij.psi.PsiDirectory
 import filegenerator.data.repository.SettingsRepository
 import filegenerator.model.Variable
 
+/**
+ * Created by abdulbasit on 13/02/2022.
+ */
+
 interface ModuleFilesCreator {
     fun createModuleFiles(
         packageName: String,

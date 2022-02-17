@@ -2,6 +2,11 @@ package filegenerator.model
 
 import java.io.Serializable
 
+
+/**
+ * Created by abdulbasit on 05/02/2022.
+ */
+
 const val DEFAULT_SOURCE_SET = "main"
 
 data class ScreenElement(

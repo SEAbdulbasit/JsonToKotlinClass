@@ -2,6 +2,10 @@ package filegenerator.data.file
 
 import filegenerator.model.Variable
 
+/**
+ * Created by abdulbasit on 05/02/2022.
+ */
+
 val ENTITY_DATA_CLASS_TEMPLATE =
     "${Variable.PACKAGE_NAME.value}.entity.model\n\n" + "import io.swvl.basemodels.EntityModel\n" + "\n\ndata class ${Variable.NAME.value}(${Variable.DATA_CLASS_PARAMS.value}) : EntityModel"
 

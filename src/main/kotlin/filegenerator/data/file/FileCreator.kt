@@ -6,6 +6,10 @@ import filegenerator.data.repository.SettingsRepository
 import filegenerator.model.FileType
 import wu.seal.jsontokotlin.model.classscodestruct.KotlinClass
 
+/**
+ * Created by abdulbasit on 01/02/2022.
+ */
+
 interface FileCreator {
     fun createScreenFiles(
         splitDataClass: KotlinClass,

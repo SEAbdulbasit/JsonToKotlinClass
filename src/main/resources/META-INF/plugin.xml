@@ -24,13 +24,6 @@
     </extensions>
 
     <actions>
-        <!--        <action id="wu.seal.wu.seal.jsontokotlin.makekotlindatawithothermodels" class="wu.seal.jsontokotlin.InsertKotlinClassAction"-->
-        <!--                text="Kotlin Remote, UI and Entity Classes from JSON"-->
-        <!--                description="Convert a json string data into kotlin data class code">-->
-        <!--            <add-to-group group-id="GenerateGroup" anchor="last"/>-->
-        <!--            <keyboard-shortcut keymap="$default" first-keystroke="alt k"/>-->
-        <!--        </action>-->
-
         <action id="wu.seal.wu.seal.jsontokotlin.GenerateKotlinFileWithUIAndEntityClassesAction"
                 class="wu.seal.jsontokotlin.GenerateKotlinFileWithUIAndEntityClassesAction"
                 text="Kotlin Remote, UI and Entity Class File from JSON"
@@ -38,13 +31,5 @@
                 description="Kotlin Remote, UI and Entity Class File from JSON">
             <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>
         </action>
-<!--        <action id="wu.seal.wu.seal.jsontokotlin.CreateNewDataModuleAction"-->
-<!--                class="wu.seal.jsontokotlin.CreateNewDataModuleAction"-->
-<!--                text="Create new Data Module"-->
-<!--                icon="/icons/action.png"-->
-<!--                description="Kotlin Remote, UI and Entity Class File from JSON">-->
-<!--            <add-to-group group-id="NewGroup" anchor="before" relative-to-action="NewFile"/>-->
-<!--        </action>-->
-
     </actions>
 </idea-plugin>

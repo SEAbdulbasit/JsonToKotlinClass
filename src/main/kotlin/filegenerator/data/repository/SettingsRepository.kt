@@ -5,6 +5,10 @@ import filegenerator.model.androidModuleElements
 import filegenerator.model.defaultScreenElements
 import filegenerator.model.moduleElements
 
+/**
+ * Created by abdulbasit on 03/02/2022.
+ */
+
 interface SettingsRepository {
     fun loadScreenElements(): List<ScreenElement>
     fun loadModuleElements(): List<ScreenElement>

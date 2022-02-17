@@ -6,6 +6,9 @@ import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.codeStyle.CodeStyleManager
 import wu.seal.jsontokotlin.filetype.KotlinFileType
 
+/**
+ * Created by abdulbasit on 01/02/2022.
+ */
 
 interface Directory {
     fun findSubdirectory(name: String): Directory?

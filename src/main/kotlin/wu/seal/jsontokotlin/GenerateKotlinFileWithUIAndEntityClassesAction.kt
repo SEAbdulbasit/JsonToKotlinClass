@@ -224,10 +224,10 @@ class GenerateKotlinFileWithUIAndEntityClassesAction : AnAction("Kotlin Remote, 
             ApplicationManager.getApplication().runWriteAction {
                 val documentText = document.text.trim()
                 if (documentText.endsWith("\n")) {
-                    document.setText(document.text + "include(\"$moduleDeclaration\")\n")
+                    document.setText(documentText + "include(\"$moduleDeclaration\")")
 
                 } else {
-                    document.setText(document.text + "\ninclude(\"$moduleDeclaration\")\n")
+                    document.setText("$documentText\ninclude(\"$moduleDeclaration\")")
                 }
             }
         }, "Update android manifest", null)
