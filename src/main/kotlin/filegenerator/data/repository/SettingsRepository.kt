@@ -2,7 +2,7 @@ package filegenerator.data.repository
 
 import filegenerator.model.ScreenElement
 import filegenerator.model.androidModuleElements
-import filegenerator.model.defaultScreenElements
+import filegenerator.model.defaultModuleElements
 import filegenerator.model.moduleElements
 
 /**
@@ -16,7 +16,7 @@ interface SettingsRepository {
 }
 
 class SettingsRepositoryImpl : SettingsRepository {
-    override fun loadScreenElements() = defaultScreenElements()
+    override fun loadScreenElements() = defaultModuleElements()
     override fun loadModuleElements() = moduleElements()
     override fun loadAndroidModuleElements() = androidModuleElements()
 

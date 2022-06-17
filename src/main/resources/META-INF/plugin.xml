@@ -1,14 +1,13 @@
 <idea-plugin>
     <id>wu.seal.tool.jsontokotlinwithuiandentity</id>
     <name>JSON To Kotlin With Entity Remote Classes</name>
-    <vendor email="sealkingking@163.com" url="https://www.github.com/wuseal">Seal</vendor>
+    <vendor email="SWVL" url="">https://www.swvl.com/</vendor>
 
     <description><![CDATA[
-      <br>Plugin for Kotlin to convert Json String into Kotlin data class code quickly</br>
+      <br>Plugin to create Entity, UI and Remote class along with Module</br>
 
     ]]></description>
-
-
+    <version>1.0.0</version>>
     <change-notes><![CDATA[]]>
     </change-notes>
 
@@ -24,8 +23,8 @@
     </extensions>
 
     <actions>
-        <action id="wu.seal.wu.seal.jsontokotlin.GenerateKotlinFileWithUIAndEntityClassesAction"
-                class="wu.seal.jsontokotlin.GenerateKotlinFileWithUIAndEntityClassesAction"
+        <action id="wu.seal.filegenerator.GenerateKotlinFileWithUIAndEntityClassesAction"
+                class="filegenerator.GenerateKotlinFileWithUIAndEntityClassesAction"
                 text="Kotlin Remote, UI and Entity Class File from JSON"
                 icon="/icons/action.png"
                 description="Kotlin Remote, UI and Entity Class File from JSON">

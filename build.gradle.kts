@@ -11,7 +11,7 @@ plugins {
 }
 
 intellij {
-    version = "2021.3"
+    version = "2017.1"
     pluginName = "JsonToKotlinClass"
 }
 
@@ -30,6 +30,10 @@ dependencies {
 buildScan {
     termsOfServiceUrl = "https://gradle.com/terms-of-service"
     termsOfServiceAgree = "yes"
+}
+
+tasks.patchPluginXml {
+    untilBuild("")
 }
 
 tasks {

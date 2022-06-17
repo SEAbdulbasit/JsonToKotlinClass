@@ -1,4 +1,4 @@
-package wu.seal.jsontokotlin
+package filegenerator
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -12,7 +12,6 @@ import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.module.ModuleTypeId
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.projectRoots.SdkModel
 import com.intellij.openapi.roots.ContentEntry
 import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.ui.Messages
@@ -39,7 +38,7 @@ import java.io.IOException
 
 
 /**
- * Created by Seal.Wu on 2018/4/18.
+ * Created by abdulbasit on 05/02/2022.
  */
 class GenerateKotlinFileWithUIAndEntityClassesAction : AnAction("Kotlin Remote, UI and Entity Class File from JSON") {
 
@@ -180,7 +179,6 @@ class GenerateKotlinFileWithUIAndEntityClassesAction : AnAction("Kotlin Remote, 
             )
             val module = ModuleManager.getInstance(project).newModule(f.path, ModuleTypeId.JAVA_MODULE)
 
-
             val model = ModuleRootManager.getInstance(module).modifiableModel
             model.inheritSdk()
             val contentEntry: ContentEntry = model.addContentEntry(f.parent)
@@ -209,16 +207,10 @@ class GenerateKotlinFileWithUIAndEntityClassesAction : AnAction("Kotlin Remote, 
 
     private fun updateGradleSettingsAndAddTheModule(project: Project, moduleDeclaration: String) {
         val file = VfsUtil.findFileByIoFile(File(project.basePath + "/settings.gradle.kts"), true) ?: return
-        // file not found
 
         if (file.fileType.isBinary) return  // file is binary
 
-
         val document = FileDocumentManager.getInstance().getDocument(file) ?: return
-        // can't read the file. Ex: it is too big
-
-        document.text
-
 
         CommandProcessor.getInstance().executeCommand(project, {
             ApplicationManager.getApplication().runWriteAction {
